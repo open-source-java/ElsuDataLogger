@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application>
+    <elsuFramework>
+        <attributes>
+            <key name="log.config">log4j.properties</key>
+            <key name="config.dump">true</key>
+            <key name="service.shutdown">#$#</key>
+            <key name="connection.terminator">.</key>
+            <key name="connection.maximum">500</key>
+            <key name="connection.idleTimeout">1000</key>
+            <key name="connection.status.ok">100</key>
+            <key name="connection.status.invalidContent">110</key>
+            <key name="connection.status.unauthorized">120</key>
+            <key name="connection.status.requestTimeout">130</key>
+            <key name="connection.status.databaseError">140</key>
+            <key name="connection.status.systemError">150</key>
+            <key name="message.datetimeFormat">yyyyMMddHHmmssS</key>
+            <key name="record.terminator">&#xA;</key>
+            <key name="record.field.delimiter">&#124;</key>
+            <key name="data.recovery.periodicity">HOUR</key>
+            <key name="data.recovery.rolloverThreshold">168</key>
+            <key name="localStore.directory">M:\Temp\dataLogger\temp\</key>
+        </attributes>
+    </elsuFramework>
+    <services>
+        <service name="controlService">
+            <port>3000</port>
+            <class>elsu.network.services.support.ControlService</class>
+            <startupType>AUTOMATIC</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>true</ignoreConnectionLimit>
+            <maxConnections>1</maxConnections>
+            <attributes>
+                <key name="service.password">Passw0rd!</key>
+            </attributes>
+        </service>
+        <service name="timeService">
+            <port>3001</port>
+            <class>elsu.network.services.support.TimeService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+        </service>
+        <service name="echoService">
+            <port>3002</port>
+            <class>elsu.network.services.support.EchoService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+        </service>
+        <service name="stateService">
+            <port>3003</port>
+            <class>elsu.network.services.support.StateService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+        </service>
+        <service name="garbageCollectionService">
+            <port>3004</port>
+            <class>elsu.network.services.support.GarbageCollectionService</class>
+            <startupType>AUTOMATIC</startupType>
+            <serviceType>CLIENT</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.garbage.collection.timer">10000</key>
+            </attributes>
+        </service>
+        <service name="reverseService">
+            <port>8100</port>
+            <class>elsu.network.services.test.ReverseService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>2</maxConnections>
+        </service>
+        <service name="alarmReceiverService">
+            <port>4000</port>
+            <class>elsu.network.services.server.ncs.MessageStorageService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.database.driver">oracle.jdbc.driver.OracleDriver</key>
+                <key name="service.database.connectionString">jdbc:oracle:thin:@//192.168.5.209:1521/ORCL</key>
+                <key name="service.database.user">NCS3</key>
+                <key name="service.database.password">NCS3</key>
+                <key name="service.database.max.pool">5</key>
+                <key name="service.message.storage.type">ALARM</key>
+                <key name="service.message.mode">LIVE</key>
+            </attributes>
+        </service>
+        <service name="messageReceiverService">
+            <port>4100</port>
+            <class>elsu.network.services.server.ncs.MessageStorageService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.database.driver">oracle.jdbc.driver.OracleDriver</key>
+                <key name="service.database.connectionString">jdbc:oracle:thin:@//192.168.5.209:1521/ORCL</key>
+                <key name="service.database.user">NCS3</key>
+                <key name="service.database.password">NCS3</key>
+                <key name="service.database.max.pool">5</key>
+                <key name="service.message.storage.type">MESSAGE</key>
+                <key name="service.message.mode">LIVE</key>
+            </attributes>
+        </service>
+        <service name="alarmRecoveryService">
+            <port>4001</port>
+            <class>elsu.network.services.server.ncs.MessageStorageService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.database.driver">oracle.jdbc.driver.OracleDriver</key>
+                <key name="service.database.connectionString">jdbc:oracle:thin:@//192.168.5.209:1521/ORCL</key>
+                <key name="service.database.user">NCS3</key>
+                <key name="service.database.password">NCS3</key>
+                <key name="service.database.max.pool">5</key>
+                <key name="service.message.storage.type">ALARM</key>
+                <key name="service.message.mode">RECOVERY</key>
+            </attributes>
+        </service>
+        <service name="messageRecoveryService">
+            <port>4101</port>
+            <class>elsu.network.services.server.ncs.MessageStorageService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.database.driver">oracle.jdbc.driver.OracleDriver</key>
+                <key name="service.database.connectionString">jdbc:oracle:thin:@//192.168.5.209:1521/ORCL</key>
+                <key name="service.database.user">NCS3</key>
+                <key name="service.database.password">NCS3</key>
+                <key name="service.database.max.pool">5</key>
+                <key name="service.message.storage.type">MESSAGE</key>
+                <key name="service.message.mode">RECOVERY</key>
+            </attributes>
+        </service>
+        <service name="commandForwarderService">
+            <port>4200</port>
+            <class>elsu.network.services.server.ncs.CommandForwarderService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>CLIENT</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.listener">false</key>
+                <key name="service.database.driver">oracle.jdbc.driver.OracleDriver</key>
+                <key name="service.database.connectionString">jdbc:oracle:thin:@//192.168.5.209:1521/ORCL</key>
+                <key name="service.database.user">NCS3</key>
+                <key name="service.database.password">NCS3</key>
+                <key name="service.client.port">5000</key>
+                <key name="service.database.max.pool">5</key>
+                <key name="service.monitor.idleTimeout">1000</key>
+            </attributes>
+        </service>
+        <service name="bcsMessageService">
+            <port>5000</port>
+            <class>elsu.network.services.client.bcs.BcsMessageService</class>
+            <startupType>DELAYEDSTART</startupType>
+            <serviceType>CLIENT</serviceType>
+            <ignoreConnectionLimit>true</ignoreConnectionLimit>
+            <maxConnections>10</maxConnections>
+            <attributes>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\</key>
+                <key name="service.localStore.mask">%s_%s_%s.txt</key>
+                <key name="service.listener">true</key>
+                <key name="service.site.name">C2CENRCA</key>
+                <key name="service.site.id">306</key>
+                <key name="service.parser.field.name">message</key>
+                <key name="service.parser.field.delimiter">,</key>
+                <key name="service.parser.field.index">1</key>
+                <key name="service.parser.field.length">10</key>
+                <key name="service.parser.field.values">5,7,9,12,17,25,38</key>
+            </attributes>
+        </service>
+        <service name="bcsSiteSimulatorTransmitterService">
+            <port>4033</port>
+            <class>elsu.network.services.client.bcs.simulator.BcsSiteSimulatorService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\simulator\</key>
+                <key name="service.localStore.filename">mp_transmitter.txt</key>
+                <key name="service.connection.send.delay">1000</key>
+                <key name="service.connection.send.loop">false</key>
+                <key name="service.connection.send.count">1</key>
+            </attributes>
+        </service>
+        <service name="bcsSiteSimulatorRSAService">
+            <port>4034</port>
+            <class>elsu.network.services.client.bcs.simulator.BcsSiteSimulatorService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\simulator\</key>
+                <key name="service.localStore.filename">mp_rsa.txt</key>
+                <key name="service.connection.send.delay">1000</key>
+                <key name="service.connection.send.loop">false</key>
+                <key name="service.connection.send.count">1</key>
+            </attributes>
+        </service>
+        <service name="bcsSiteSimulatorIMAService">
+            <port>4035</port>
+            <class>elsu.network.services.client.bcs.simulator.BcsSiteSimulatorService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\simulator\</key>
+                <key name="service.localStore.filename">mp_ima.txt</key>
+                <key name="service.connection.send.delay">1000</key>
+                <key name="service.connection.send.loop">false</key>
+                <key name="service.connection.send.count">1</key>
+            </attributes>
+        </service>
+        <service name="bcsSiteSimulatorRSBService">
+            <port>4036</port>
+            <class>elsu.network.services.client.bcs.simulator.BcsSiteSimulatorService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\simulator\</key>
+                <key name="service.localStore.filename">mp_rsb.txt</key>
+                <key name="service.connection.send.delay">1000</key>
+                <key name="service.connection.send.loop">false</key>
+                <key name="service.connection.send.count">1</key>
+            </attributes>
+        </service>
+        <service name="bcsSiteSimulatorIMBService">
+            <port>4037</port>
+            <class>elsu.network.services.client.bcs.simulator.BcsSiteSimulatorService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\simulator\</key>
+                <key name="service.localStore.filename">mp_imb.txt</key>
+                <key name="service.connection.send.delay">1000</key>
+                <key name="service.connection.send.loop">false</key>
+                <key name="service.connection.send.count">1</key>
+            </attributes>
+        </service>
+        <service name="fileTransferService">
+            <port>5500</port>
+            <class>elsu.network.services.support.FileTransferService</class>
+            <startupType>MANUAL</startupType>
+            <serviceType>SERVER</serviceType>
+            <ignoreConnectionLimit>false</ignoreConnectionLimit>
+            <maxConnections>0</maxConnections>
+            <attributes>
+                <key name="service.localStore.useAlways">false</key>
+                <key name="service.localStore.directory">M:\Temp\dataLogger\in_out\</key>
+                <key name="service.connection.buffer.size">512</key>
+                <key name="service.connection.idle.timeout">5000</key>
+            </attributes>
+        </service>
+    </services>
+    <childServices>
+        <forService name="bcsMessageService">
+            <services>
+                <childService name="transmitter">
+                    <port>4033</port>
+                    <class>elsu.network.services.client.bcs.BcsMessageSubscriberService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>SUBSCRIBER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.hostUri">172.16.30.33</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                        <key name="record.terminator.outbound">&#xD;&#xA;</key>
+                    </attributes>                
+                </childService>
+                <childService name="rsa">
+                    <port>4034</port>
+                    <class>elsu.network.services.client.bcs.BcsMessageSubscriberService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>SUBSCRIBER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.hostUri">172.16.30.34</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                        <key name="record.terminator.outbound">&#xD;&#xA;</key>
+                    </attributes>                
+                </childService>
+                <childService name="ima">
+                    <port>4035</port>
+                    <class>elsu.network.services.client.bcs.BcsMessageSubscriberService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>SUBSCRIBER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.hostUri">172.16.30.35</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                        <key name="record.terminator.outbound">&#xD;&#xA;</key>
+                    </attributes>                
+                </childService>
+                <childService name="rsb">
+                    <port>4036</port>
+                    <class>elsu.network.services.client.bcs.BcsMessageSubscriberService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>SUBSCRIBER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.hostUri">172.16.30.36</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                        <key name="record.terminator.outbound">&#xD;&#xA;</key>
+                    </attributes>                
+                </childService>
+                <childService name="imb">
+                    <port>4037</port>
+                    <class>elsu.network.services.client.bcs.BcsMessageSubscriberService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>SUBSCRIBER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.hostUri">172.16.30.37</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                        <key name="record.terminator.outbound">&#xD;&#xA;</key>
+                    </attributes>                
+                </childService>
+                <childService name="alarmPublisher">
+                    <port>4000</port>
+                    <class>elsu.network.services.client.bcs.BcsMessagePublisherService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>PUBLISHER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.connection.hostUri.count">3</key>
+                        <key name="service.connection.hostUri.1">192.168.7.10</key>
+                        <key name="service.connection.hostUri.2">localhost2</key>
+                        <key name="service.connection.hostUri.3">localhost3</key>
+                        <key name="service.publisher.type">ALARM</key>
+                        <key name="service.processing.mode">LIVE</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                    </attributes>
+                </childService>
+                <childService name="messagePublisher">
+                    <port>4100</port>
+                    <class>elsu.network.services.client.bcs.BcsMessagePublisherService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>PUBLISHER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.connection.hostUri.count">3</key>
+                        <key name="service.connection.hostUri.1">192.168.7.10</key>
+                        <key name="service.connection.hostUri.2">localhost2</key>
+                        <key name="service.connection.hostUri.3">localhost3</key>
+                        <key name="service.publisher.type">MESSAGE</key>
+                        <key name="service.processing.mode">LIVE</key>
+                        <key name="service.monitor.idleTimeout">1000</key>
+                    </attributes>
+                </childService>
+                <childService name="alarmRecoveryPublisher">
+                    <port>4001</port>
+                    <class>elsu.network.services.client.bcs.BcsMessagePublisherService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>PUBLISHER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.connection.hostUri.count">3</key>
+                        <key name="service.connection.hostUri.1">192.168.7.10</key>
+                        <key name="service.connection.hostUri.2">localhost2</key>
+                        <key name="service.connection.hostUri.3">localhost3</key>
+                        <key name="service.publisher.type">ALARM</key>
+                        <key name="service.processing.mode">RECOVERY</key>
+                        <key name="service.monitor.idleTimeout">5000</key>
+                    </attributes>
+                </childService>
+                <childService name="messageRecoveryPublisher">
+                    <port>4101</port>
+                    <class>elsu.network.services.client.bcs.BcsMessagePublisherService</class>
+                    <startupType>AUTOMATIC</startupType>
+                    <serviceType>PUBLISHER</serviceType>
+                    <ignoreConnectionLimit>false</ignoreConnectionLimit>
+                    <maxConnections>0</maxConnections>
+                    <attributes>
+                        <key name="service.connection.hostUri.count">3</key>
+                        <key name="service.connection.hostUri.1">192.168.7.10</key>
+                        <key name="service.connection.hostUri.2">localhost2</key>
+                        <key name="service.connection.hostUri.3">localhost3</key>
+                        <key name="service.publisher.type">MESSAGE</key>
+                        <key name="service.processing.mode">RECOVERY</key>
+                        <key name="service.monitor.idleTimeout">5000</key>
+                    </attributes>
+                </childService>
+            </services>
+        </forService>
+    </childServices>
+</application>
