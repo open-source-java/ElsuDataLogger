@@ -1,0 +1,61 @@
+$PRCM,1,RSB User Name    : Hewlett-Packard Company
+$PRCM,1,RSB Company Name : CyberLink
+$PRCM,1,RSB CDKey        : 
+$PRCM,1,RSB OS Version   : Windows 7 Home PremiumService Pack 1
+$PRCM,1,RSB c:\Program Files (x86)\CyberLink\Power2Go\Power2Go.exe : Version 6.1.0.5391
+$PRCM,1,RSB CBS.dll : Version 7.7.6531  
+
+$PRCM,1,RSB ==================================================================
+
+$PRCM,5,RSB Total physical memory : 15856MB (16237156KB)
+$PRCM,5,RSB Free physical memory  : 12359MB (12655616KB)
+$PRCM,5,RSB Memory load	      : 22 percent
+
+$PRCM,5,RSB Number of CPU : 4
+$PRCM,5,RSB CPU Name      : AMD A6-3600 APU with Radeon(tm) HD Graphics
+$PRCM,5,RSB CPU Speed     : 2096 MHz
+
+==================================================================
+
+$PRCM,1,RSB 9.8.2012
+$PRCM,1,RSB Task Type : Burn Disc Image
+
+$PRCM,1,RSB 22:49:00, File(cl_DiscCopy.cpp), Line(8440)
+$PRCM,1,RSB 	-> Begin burning process
+$PRCM,1,RSB 	Current drive:	<F: ASUS    	BW-12B1ST       	1.03>
+$PRCM,1,RSB 	====== Disc Info =======
+$PRCM,38,RSB 	Disc Type: DVD-R
+$PRCM,38,RSB 	Disc Status: Blank, Appendable
+$PRCM,1,RSB 	Num. of Sessions: 1 	Num. of Tracks: 1
+$PRCM,7,RSB 	Book Type: DVD-R
+$PRCM,1,RSB 	Track Path: 
+$PRCM,1,RSB 	Parallel Track Path
+$PRCM,1,RSB 	Diameter Length: 120mm 	Layer Counts: 1
+$PRCM,9,RSB 	Data Area Start PSN: 196608 	End PSN: 0 	End PSN on Layer 0: 0
+$PRCM,1,RSB 	End PSN : 120mm 	Layer Counts: 1
+$PRCM,5,RSB 	Disc Capacity: 2297888LBs
+$PRCM,5,RSB 	Free Size: 2297888LBs Used Size: 0LBs
+$PRCM,1,RSB 	========================
+$PRCM,12,RSB 	Current writing speed(x): 4.0
+$PRCM,12,RSB 	-> Burn from image
+
+$PRCM,5,RSB 22:49:00, file(cl_DiscCopy.cpp), line(8863)
+$PRCM,1,RSB 	-> Prepare writing disc
+$PRCM,1,RSB 	Burn option: w/ buffer underrun protection
+$PRCM,1,RSB 	Burn option: w/o simulation
+$PRCM,1,RSB 	Burn option: w/o close disc
+$PRCM,1,RSB 	Burn option: w/ verify disc
+$PRCM,1,RSB 	Burn mode: PACKET_INC
+
+$PRCM,25,RSB 22:53:31, file(cl_DiscCopy.cpp), line(1060)
+$PRCM,1,RSB 	-> End write
+$PRCM,1,RSB 	Last write LBA: 648352
+
+$PRCM,5,RSB 22:53:35, file(cl_DiscCopy.cpp), line(1146)
+$PRCM,1,RSB 	-> Close track: 1
+
+$PRCM,5,RSB 22:54:13, file(cl_DiscCopy.cpp), line(1203)
+$PRCM,1,RSB 	-> Close disc
+$PRCM,1,RSB 	-> End burning process
+
+$PRCM,1,RSB ==================================================================

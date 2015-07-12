@@ -1,0 +1,1 @@
+M:\Temp\dataLogger\outgoing\306_2014112921_ALM.txt,37845

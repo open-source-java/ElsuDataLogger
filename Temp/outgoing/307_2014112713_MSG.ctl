@@ -1,0 +1,1 @@
+M:\Temp\dataLogger\outgoing\307_2014112713_MSG.txt,19229
