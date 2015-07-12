@@ -19,3 +19,6 @@ hs_err_pid*
 /ElsuMessageProcessor/nbproject/private/
 /ElsuSitePublisherSubscriber/nbproject/private/
 /ElsuSitePublisherSubscriber/build/
+/ElsuSitePublisherSubscriber/dist/
+/ElsuMessageProcessor/build/
+/ElsuMessageProcessor/dist/

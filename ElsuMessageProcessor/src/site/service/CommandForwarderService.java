@@ -338,7 +338,7 @@ public class CommandForwarderService extends ServiceAbstract implements IService
 
             // using database manager, execute the procedure with parameters
             result = getDBManager().executeProcedure(
-                    "{call pGetPendingNotifierCount(?,?)}", params);
+                    "{call pGetPendingNotifierCnt(?,?)}", params);
         } catch (Exception ex){
             // log error for tracking
             logError(getClass().toString() + ", getPendingNotifierCount(), "
