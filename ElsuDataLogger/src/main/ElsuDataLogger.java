@@ -6,7 +6,7 @@ import elsu.network.application.*;
  *
  * @author ssd.administrator
  */
-public class DGPSElsuDataLogger extends ElsuNetworkServicesAbstract {
+public class ElsuDataLogger extends ElsuNetworkServicesAbstract {
 
     /**
      * main(Strings[] args) method is the applicaton entry point for
@@ -19,7 +19,7 @@ public class DGPSElsuDataLogger extends ElsuNetworkServicesAbstract {
         try {
             // instantiate the main controller class and call its run()
             // method to start service factory
-            DGPSElsuDataLogger dgpsedl = new DGPSElsuDataLogger();
+            ElsuDataLogger dgpsedl = new ElsuDataLogger();
             dgpsedl.run(args);
         } catch (Exception ex){
             // Display a message if anything goes wrong
