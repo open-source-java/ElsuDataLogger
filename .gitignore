@@ -1,24 +1,12 @@
-*.class
+# *.class
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.jar
-*.war
-*.ear
+# *.jar
+# *.war
+# *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-/ElsuDataLogger/nbproject/private/
-/ElsuSiteSimulator/nbproject/private/
-/ElsuSiteSimulator/build/
-/ElsuSiteSimulator/dist/
-/ElsuSiteSubscriber/nbproject/private/
-/ElsuSitePublisher/nbproject/private/
-/ElsuMessageProcessor/nbproject/private/
-/ElsuSitePublisherSubscriber/nbproject/private/
-/ElsuSitePublisherSubscriber/build/
-/ElsuSitePublisherSubscriber/dist/
-/ElsuMessageProcessor/build/
-/ElsuMessageProcessor/dist/
