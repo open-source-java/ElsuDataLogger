@@ -43,7 +43,7 @@ import java.util.regex.*;
  * @see BcsMessageSubscriberService
  * @see BcsMessagePublisherService
  */
-public class BcsMessageService extends ServiceAbstract implements IService {
+public class BcsMessageService extends AbstractService implements IService {
 
     // <editor-fold desc="class private storage">
     // stores the shutdown string for connection, when received, the service
@@ -565,7 +565,7 @@ public class BcsMessageService extends ServiceAbstract implements IService {
      * @throws Exception
      */
     @Override
-    public void serve(ServiceConnectionAbstract conn) throws Exception {
+    public void serve(AbstractServiceConnection conn) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

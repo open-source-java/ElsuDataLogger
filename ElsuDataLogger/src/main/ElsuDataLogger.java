@@ -6,7 +6,7 @@ import elsu.network.application.*;
  *
  * @author ssd.administrator
  */
-public class ElsuDataLogger extends ElsuNetworkServicesAbstract {
+public class ElsuDataLogger extends AbstractNetworkServices {
 
     /**
      * main(Strings[] args) method is the applicaton entry point for
