@@ -19,9 +19,9 @@ import java.util.*;
  * <p>
  * This service creates connections on demand to the equipment service.
  *
- * 20141128 SSD updated database calls to separate return variable initialization
- * to null
- * 
+ * 20141128 SSD updated database calls to separate return variable
+ * initialization to null
+ *
  * @author Seraj Dhaliwal (seraj.s.dhaliwal@uscg.mil)
  */
 public class CommandForwarderService extends AbstractService implements IService {
@@ -77,7 +77,7 @@ public class CommandForwarderService extends AbstractService implements IService
      * @see ServiceProperties
      * @see ServiceConnectionAbstract
      * @see ServiceConnectionBasic
-     * @see ServiceConnection
+     * @see Connection
      */
     public CommandForwarderService(ServiceFactory factory, String threadGroup,
             ServiceConfig serviceConfig) {
@@ -113,7 +113,7 @@ public class CommandForwarderService extends AbstractService implements IService
             this._maxPool = Integer.parseInt(
                     getServiceConfig().getAttributes().get(
                             "service.database.max.pool").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -124,7 +124,7 @@ public class CommandForwarderService extends AbstractService implements IService
         try {
             this._clientPort = Integer.parseInt(
                     getServiceConfig().getAttributes().get("service.client.port").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -137,7 +137,7 @@ public class CommandForwarderService extends AbstractService implements IService
             this._idleTimeout = Integer.parseInt(
                     getServiceConfig().getAttributes().get(
                             "service.monitor.idleTimeout").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -301,7 +301,7 @@ public class CommandForwarderService extends AbstractService implements IService
             // using database manager, execute the procedure with parameters
             getDBManager().executeProcedure("{call pClearPendingNotifier(?)}",
                     params);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", clearPendingNotifier(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -340,7 +340,7 @@ public class CommandForwarderService extends AbstractService implements IService
             // using database manager, execute the procedure with parameters
             result = getDBManager().executeProcedure(
                     "{call pGetPendingNotifierCount(?,?)}", params);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", getPendingNotifierCount(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -376,7 +376,7 @@ public class CommandForwarderService extends AbstractService implements IService
             // using database manager, execute the procedure with parameters
             getDBManager().executeProcedure(
                     "{call pUpdatePendingNotifier(?, ?)}", params);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", updatePendingNotifier(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -402,7 +402,7 @@ public class CommandForwarderService extends AbstractService implements IService
                 // connection to monitor database for outbound messages
                 if (!isMonitorRunning()) {
                     // create the service connection non socket
-                    ServiceConnection dsConn = new ServiceConnection(null, this);
+                    Connection dsConn = new Connection(null, this);
 
                     // add the connection to the service list
                     addConnection(null, dsConn);
@@ -410,7 +410,7 @@ public class CommandForwarderService extends AbstractService implements IService
                     // update the connection indicator
                     isMonitorRunning(true);
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 // log error for tracking
                 logError(getClass().toString() + ", checkConnections(), "
                         + getServiceConfig().getServiceName()
@@ -419,22 +419,6 @@ public class CommandForwarderService extends AbstractService implements IService
                         + ", " + ex.getMessage());
             }
         }
-    }
-
-    /**
-     * serve(...) method is the optional method of the service which processes
-     * the client connection using the socket in and out streams.
-     * <p>
-     * Not used for this service, Not supported exception is thrown if executed.
-     *
-     * @param iStream
-     * @param oStream
-     * @throws Exception
-     */
-    @Override
-    public void serve(InputStream iStream, OutputStream oStream) throws
-            Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -456,9 +440,9 @@ public class CommandForwarderService extends AbstractService implements IService
      * @throws Exception
      */
     @Override
-    public void serve(AbstractServiceConnection conn) throws Exception {
+    public void serve(AbstractConnection conn) throws Exception {
         // unbox the connection to custom service connection
-        ServiceConnection cConn = (ServiceConnection) conn;
+        Connection cConn = (Connection) conn;
 
         // this is a non socket connection, monitor action will be performed
         if (cConn.getClient() == null) {
@@ -490,7 +474,7 @@ public class CommandForwarderService extends AbstractService implements IService
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
                     result = getDBManager().executeProcedure(
-                                    "{call pGetPendingNotifier(?,?)}", params);
+                            "{call pGetPendingNotifier(?,?)}", params);
 
                     // if there is data available, result contains key/value pairs
                     if ((result != null) && (!result.isEmpty())) {
@@ -511,8 +495,8 @@ public class CommandForwarderService extends AbstractService implements IService
                                         getClientPort());
 
                                 // assign the socket to the service connection
-                                ServiceConnection dsConn
-                                        = new ServiceConnection(client, this);
+                                Connection dsConn
+                                        = new Connection(client, this);
 
                                 // store the connection properties that will be
                                 // used for retrieving and connection properties
@@ -522,7 +506,7 @@ public class CommandForwarderService extends AbstractService implements IService
                                 // add the connection to the service list
                                 addConnection(client, dsConn);
                             }
-                        } catch (Exception ex){
+                        } catch (Exception ex) {
                             // if siteId is not zero, clear the pending messages
                             // due to error, old messages are set to ignore
                             if (siteId != 0) {
@@ -544,7 +528,7 @@ public class CommandForwarderService extends AbstractService implements IService
                     // yield processing to other threads
                     Thread.yield();
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 // log error for tracking
                 logError(getClass().toString() + ", serve(), "
                         + getServiceConfig().getServiceName() + ", "
@@ -598,8 +582,8 @@ public class CommandForwarderService extends AbstractService implements IService
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
                     result = getDBManager().executeProcedure(
-                                    "{call pRetrievePendingNotifier(?,?,?,?)}",
-                                    params);
+                            "{call pRetrievePendingNotifier(?,?,?,?)}",
+                            params);
 
                     // if the result from the stored procedure is valid
                     if ((result != null) && (!result.isEmpty())) {
@@ -642,7 +626,7 @@ public class CommandForwarderService extends AbstractService implements IService
 
                             // clear the site messages which have been sent
                             updatePendingNotifier(0, messageId);
-                        } catch (Exception ex){
+                        } catch (Exception ex) {
                             // throw exception if there is error with the data
                             throw new Exception("invalid data/message retrieval");
                         }
@@ -654,7 +638,7 @@ public class CommandForwarderService extends AbstractService implements IService
                     // yield processing to other threads
                     Thread.yield();
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 // clear the pending messages due to error, old messages are 
                 // set to ignore
                 clearPendingNotifier(siteId);
@@ -669,12 +653,16 @@ public class CommandForwarderService extends AbstractService implements IService
 
                 // close the in/out streams
                 try {
+                    try {
+                        out.flush();
+                    } catch (Exception exi) {
+                    }
                     out.close();
-                } catch (Exception exi){
+                } catch (Exception exi) {
                 }
                 try {
                     in.close();
-                } catch (Exception exi){
+                } catch (Exception exi) {
                 }
             }
 
@@ -706,7 +694,7 @@ public class CommandForwarderService extends AbstractService implements IService
                     getDbConnectionString(), getMaxPool(),
                     getDbUser(),
                     getDbPassword());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", start, "
                     + getServiceConfig().getServiceName() + " on port "

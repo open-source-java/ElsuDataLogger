@@ -76,7 +76,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
             this._sendDelay = Integer.parseInt(
                     getServiceConfig().getAttributes().get(
                             "service.connection.send.delay").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -92,7 +92,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
             this._sendCount = Integer.parseInt(
                     getServiceConfig().getAttributes().get(
                             "service.connection.send.count").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -225,7 +225,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
     private synchronized void setSimData() {
         try {
             getSimData().addAll(FileStack.readFile(getSimFile()));
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", setSimData(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort() + ", "
@@ -243,26 +243,27 @@ public class SiteSimulatorService extends AbstractService implements IService {
      * are stored to a text file and read by the respective subscriber and sent
      * to the equipment
      *
-     * @param iStream
-     * @param oStream
+     * @param conn
      * @throws Exception
      */
     @Override
-    public void serve(InputStream iStream, OutputStream oStream) throws
-            Exception {
+    public void serve(AbstractConnection conn) throws Exception {
+        // retrieve current connection count to use for reader thread name 
+        // uniqueness
         long totalConnections = getTotalConnections();
 
-        // create bufferred reader reference for the input stream. the 
-        // reference is created outside the try...catch (Exception ex)the
-        // finally to perform cleanup correctly
-        final BufferedReader in = new BufferedReader(new InputStreamReader(
-                iStream));
+        // local parameter for reader thread access, passes the connection 
+        // object
+        final Connection cConn = (Connection) conn;
 
-        // create print writer reference for the output stream. the 
-        // reference is created outside the try...catch (Exception ex)the
-        // finally to perform cleanup correctly
+        // local parameter for reader thread access, passes the socket in stream
+        final BufferedReader in = new BufferedReader(new InputStreamReader(
+                cConn.getClient().getInputStream()));
+
+        // local parameter for reader thread access, passes the socket out 
+        // stream
         final PrintWriter out = new PrintWriter(new BufferedWriter(
-                new OutputStreamWriter(oStream)));
+                new OutputStreamWriter(cConn.getClient().getOutputStream())));
 
         // store total records in the simulator file (from ArrayList)
         int rCount = getSimData().size();
@@ -324,7 +325,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
                             // yield processing to other threads
                             Thread.yield();
                         }
-                    } catch (Exception ex){
+                    } catch (Exception ex) {
                         // log error for tracking
                         logError(getClass().toString() + ", serve(), "
                                 + getServiceConfig().getServiceName()
@@ -339,11 +340,11 @@ public class SiteSimulatorService extends AbstractService implements IService {
                         // close out all open in/out streams.
                         try {
                             out.close();
-                        } catch (Exception exi){
+                        } catch (Exception exi) {
                         }
                         try {
                             in.close();
-                        } catch (Exception exi){
+                        } catch (Exception exi) {
                         }
 
                         // log info for tracking
@@ -380,7 +381,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
                     // yield processing to other threads
                     try {
                         Thread.sleep(getSendDelay());
-                    } catch (Exception exi){
+                    } catch (Exception exi) {
                     }
                 }
 
@@ -421,7 +422,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
                 // yield processing to other threads
                 Thread.yield();
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", serve(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -433,28 +434,18 @@ public class SiteSimulatorService extends AbstractService implements IService {
 
             // close out all open in/out streams.
             try {
+                try {
+                    out.flush();
+                } catch (Exception exi) {
+                }
                 out.close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
             try {
                 in.close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
         }
-    }
-
-    /**
-     * serve(...) method is the optional method of the service which processes
-     * the client connection which can be not socket based.
-     * <p>
-     * Not used for this service, Not supported exception is thrown if executed.
-     *
-     * @param conn
-     * @throws Exception
-     */
-    @Override
-    public void serve(AbstractServiceConnection conn) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
