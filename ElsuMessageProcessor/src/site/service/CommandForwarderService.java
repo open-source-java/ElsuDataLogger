@@ -23,7 +23,7 @@ import java.util.*;
  * 
  * @author Seraj Dhaliwal (seraj.s.dhaliwal@uscg.mil)
  */
-public class CommandForwarderService extends ServiceAbstract implements IService {
+public class CommandForwarderService extends AbstractService implements IService {
 
     // <editor-fold desc="class private storage">
     // storage for service shutdown string when received terminates the service
@@ -455,7 +455,7 @@ public class CommandForwarderService extends ServiceAbstract implements IService
      * @throws Exception
      */
     @Override
-    public void serve(ServiceConnectionAbstract conn) throws Exception {
+    public void serve(AbstractServiceConnection conn) throws Exception {
         // unbox the connection to custom service connection
         ServiceConnection cConn = (ServiceConnection) conn;
 
