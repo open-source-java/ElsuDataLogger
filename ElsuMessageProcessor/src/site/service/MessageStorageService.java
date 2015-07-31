@@ -22,7 +22,7 @@ import java.util.regex.*;
  *
  * @author Seraj Dhaliwal (seraj.s.dhaliwal@uscg.mil)
  */
-public class MessageStorageService extends ServiceAbstract implements IService {
+public class MessageStorageService extends AbstractService implements IService {
 
     // <editor-fold desc="class private storage">
     // storage for service shutdown string when received terminates the service
@@ -469,7 +469,7 @@ public class MessageStorageService extends ServiceAbstract implements IService {
      * @throws Exception
      */
     @Override
-    public void serve(ServiceConnectionAbstract conn) throws Exception {
+    public void serve(AbstractServiceConnection conn) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -29,7 +29,7 @@ import site.core.*;
  * @see ServiceProperties
  * @see ServiceRuntimeProperties
  */
-public class SiteMessagePublisherService extends ServiceAbstract implements
+public class SiteMessagePublisherService extends AbstractService implements
         IService {
 
     // <editor-fold desc="class private storage">
@@ -580,7 +580,7 @@ public class SiteMessagePublisherService extends ServiceAbstract implements
      * @throws Exception
      */
     @Override
-    public void serve(ServiceConnectionAbstract conn) throws Exception {
+    public void serve(AbstractServiceConnection conn) throws Exception {
         // retrieve current connection count to use for reader thread name 
         // uniqueness
         long totalConnections = getTotalConnections();
