@@ -2,7 +2,7 @@ package site.service;
 
 import elsu.network.services.core.ServiceConfig;
 import elsu.network.services.core.IService;
-import elsu.network.services.core.AbstractConnection;
+import elsu.network.services.AbstractConnection;
 import elsu.network.services.core.AbstractService;
 import elsu.network.factory.ServiceFactory;
 import elsu.common.FileStack;
