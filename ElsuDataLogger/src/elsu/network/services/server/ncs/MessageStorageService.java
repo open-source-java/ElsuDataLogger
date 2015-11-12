@@ -1,7 +1,11 @@
 package elsu.network.services.server.ncs;
 
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.core.IService;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.factory.ServiceFactory;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.database.*;
 import elsu.common.*;
 import java.io.*;
@@ -321,38 +325,38 @@ public class MessageStorageService extends AbstractService implements IService {
 
                         // store the siteId parameter value
                         params.add(new DatabaseParameter("siteid",
-                                DatabaseDataTypes.dtint, Integer.parseInt(
+                                DatabaseDataType.dtint, Integer.parseInt(
                                         lineData[0])));
                         params.add(new DatabaseParameter("equipid",
-                                DatabaseDataTypes.dtint, Integer.parseInt(
+                                DatabaseDataType.dtint, Integer.parseInt(
                                         lineData[2])));
                         params.add(new DatabaseParameter("dtg",
-                                DatabaseDataTypes.dttimestamp,
+                                DatabaseDataType.dttimestamp,
                                 DateStack.convertDate2SQLTimestamp(tDate,
                                         "yyyy/MM/dd HH:mm:ss.S")));
                         params.add(new DatabaseParameter("msgtext",
-                                DatabaseDataTypes.dtstring, lineData[4]));
+                                DatabaseDataType.dtstring, lineData[4]));
                         params.add(new DatabaseParameter("outbound",
-                                DatabaseDataTypes.dtstring, "N"));
+                                DatabaseDataType.dtstring, "N"));
                         if (getMessageStorageType() == MessageStorageType.ALARM) {
                             params.add(new DatabaseParameter("alarm",
-                                    DatabaseDataTypes.dtstring, "Y"));
+                                    DatabaseDataType.dtstring, "Y"));
                         } else {
                             params.add(new DatabaseParameter("alarm",
-                                    DatabaseDataTypes.dtstring, "N"));
+                                    DatabaseDataType.dtstring, "N"));
                         }
                         if (getMessageStorageMode()
                                 == MessageStorageProcessingType.RECOVERY) {
                             params.add(new DatabaseParameter("recovery",
-                                    DatabaseDataTypes.dtstring, "Y"));
+                                    DatabaseDataType.dtstring, "Y"));
                         } else {
                             params.add(new DatabaseParameter("recovery",
-                                    DatabaseDataTypes.dtstring, "N"));
+                                    DatabaseDataType.dtstring, "N"));
                         }
                         params.add(new DatabaseParameter("id",
-                                DatabaseDataTypes.dtint, true));
+                                DatabaseDataType.dtint, true));
                         params.add(new DatabaseParameter("status",
-                                DatabaseDataTypes.dtstring, true));
+                                DatabaseDataType.dtstring, true));
 
                         // using database manager, execute the procedure with parameters
                         Map<String, Object> result = null;

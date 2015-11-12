@@ -1,7 +1,11 @@
 package elsu.network.services.client.bcs;
 
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.core.IService;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.factory.ServiceFactory;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.common.*;
 import elsu.io.*;
 import java.io.*;

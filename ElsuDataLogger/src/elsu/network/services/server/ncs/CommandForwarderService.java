@@ -1,7 +1,11 @@
 package elsu.network.services.server.ncs;
 
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.core.IService;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.factory.ServiceFactory;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.database.*;
 import elsu.network.services.client.bcs.*;
 import java.io.*;
@@ -295,7 +299,7 @@ public class CommandForwarderService extends AbstractService implements IService
             params = new ArrayList<>();
 
             // store the siteId parameter value
-            params.add(new DatabaseParameter("siteid", DatabaseDataTypes.dtint,
+            params.add(new DatabaseParameter("siteid", DatabaseDataType.dtint,
                     siteId));
 
             // using database manager, execute the procedure with parameters
@@ -332,9 +336,9 @@ public class CommandForwarderService extends AbstractService implements IService
             params = new ArrayList<>();
 
             // store the siteId parameter value
-            params.add(new DatabaseParameter("siteid", DatabaseDataTypes.dtint,
+            params.add(new DatabaseParameter("siteid", DatabaseDataType.dtint,
                     siteId));
-            params.add(new DatabaseParameter("count", DatabaseDataTypes.dtint,
+            params.add(new DatabaseParameter("count", DatabaseDataType.dtint,
                     true));
 
             // using database manager, execute the procedure with parameters
@@ -368,10 +372,10 @@ public class CommandForwarderService extends AbstractService implements IService
             params = new ArrayList<>();
 
             // store the siteId parameter value
-            params.add(new DatabaseParameter("siteid", DatabaseDataTypes.dtint,
+            params.add(new DatabaseParameter("siteid", DatabaseDataType.dtint,
                     siteId));
             params.add(new DatabaseParameter("messageid",
-                    DatabaseDataTypes.dtint, messageId));
+                    DatabaseDataType.dtint, messageId));
 
             // using database manager, execute the procedure with parameters
             getDBManager().executeProcedure(
@@ -467,9 +471,9 @@ public class CommandForwarderService extends AbstractService implements IService
 
                     // store the siteId parameter value
                     params.add(new DatabaseParameter("siteid",
-                            DatabaseDataTypes.dtint, true));
+                            DatabaseDataType.dtint, true));
                     params.add(new DatabaseParameter("siteip",
-                            DatabaseDataTypes.dtstring, true));
+                            DatabaseDataType.dtstring, true));
 
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
@@ -571,13 +575,13 @@ public class CommandForwarderService extends AbstractService implements IService
 
                     // store the siteId parameter value
                     params.add(new DatabaseParameter("siteid",
-                            DatabaseDataTypes.dtint, siteId));
+                            DatabaseDataType.dtint, siteId));
                     params.add(new DatabaseParameter("messageid",
-                            DatabaseDataTypes.dtint, true));
+                            DatabaseDataType.dtint, true));
                     params.add(new DatabaseParameter("equipmentid",
-                            DatabaseDataTypes.dtint, true));
+                            DatabaseDataType.dtint, true));
                     params.add(new DatabaseParameter("message",
-                            DatabaseDataTypes.dtstring, true));
+                            DatabaseDataType.dtstring, true));
 
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
