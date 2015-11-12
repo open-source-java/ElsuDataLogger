@@ -1,8 +1,12 @@
 package elsu.network.services.client.bcs;
 
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.core.IService;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.factory.ServiceFactory;
 import elsu.common.FileStack;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.io.*;
 import java.io.*;
 import java.net.*;
@@ -479,8 +483,8 @@ public class BcsMessagePublisherService extends AbstractService implements
                                                 getChildConfig().getConnectionPort());
 
                                         // create connection for the socket
-                                        ServiceConnection dsConn
-                                                = new ServiceConnection(client,
+                                        Connection dsConn
+                                                = new Connection(client,
                                                         publisher);
 
                                         // add the connection to the service list
@@ -532,23 +536,6 @@ public class BcsMessagePublisherService extends AbstractService implements
     }
 
     /**
-     * serve(...) method is the optional method of the service which processes
-     * the client connection using the socket in and out streams.
-     * <p>
-     * Not used for this service, Not supported exception is thrown if executed.
-     *
-     * @param iStream
-     * @param oStream
-     * @param conn
-     * @throws Exception
-     */
-    @Override
-    public void serve(InputStream iStream, OutputStream oStream) throws
-            Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
      * serve(...) method of the service which processes the client connection
      * which can be non socket based.
      * <p>
@@ -579,14 +566,14 @@ public class BcsMessagePublisherService extends AbstractService implements
      * @throws Exception
      */
     @Override
-    public void serve(AbstractServiceConnection conn) throws Exception {
+    public void serve(AbstractConnection conn) throws Exception {
         // retrieve current connection count to use for reader thread name 
         // uniqueness
         long totalConnections = getTotalConnections();
 
         // local parameter for reader thread access, passes the connection 
         // object
-        final ServiceConnection cConn = (ServiceConnection) conn;
+        final Connection cConn = (Connection) conn;
 
         // local parameter for reader thread access, passes the socket in stream
         final BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -787,6 +774,10 @@ public class BcsMessagePublisherService extends AbstractService implements
 
             // close all socket streams and ignore any exceptions
             try {
+                try {
+                    out.flush();
+                } catch (Exception exi) {
+                }
                 out.close();
             } catch (Exception exi) {
             }

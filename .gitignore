@@ -12,6 +12,7 @@
 hs_err_pid*
 
 # local compiler properties
+<<<<<<< HEAD
 nbproject/private/
 build/
 nbbuild/
@@ -19,3 +20,7 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+=======
+/ElsuDataLogger/build/
+/ElsuDataLogger/dist/
+>>>>>>> 0ba5f9893b80a33df8b64b130345df978782726f

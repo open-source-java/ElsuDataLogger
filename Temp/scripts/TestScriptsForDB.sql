@@ -560,27 +560,27 @@ SELECT mindt,
        ROUND ( (avgSite / sites) / 7500, 2) avgDays,
        sites,
        maxdt - mindt dt
-  FROM (SELECT MIN (dtg) mindt,
+  FROM (SELECT MIN (DTG) mindt,
                MAX (dtg) maxdt,
                COUNT (*) tcount,
-               COUNT (DISTINCT siteid) sites,
-               ROUND (COUNT (*) / COUNT (DISTINCT siteid), 2) avgSite
-          FROM orcl.messages);
+               COUNT (DISTINCT site_id) sites,
+               ROUND (COUNT (*) / COUNT (DISTINCT site_id), 2) avgSite
+          FROM ncs3.vwmessage);
 
-  SELECT siteid,
+  SELECT site_id,
          MIN (dtg) mindt,
          MAX (dtg) maxdt,
          COUNT (*) tcount,
          ROUND (COUNT (*) / 15, 2) avgSite
-    FROM orcl.messages
-GROUP BY siteid;
+    FROM ncs3.vwmessage
+GROUP BY site_id;
 
 SELECT MIN (dtg) mindt,
        MAX (dtg) maxdt,
        COUNT (*) tcount,
-       COUNT (DISTINCT siteid) sites,
-       ROUND (COUNT (*) / COUNT (DISTINCT siteid), 2) avgSite
-  FROM orcl.messages;
+       COUNT (DISTINCT site_id) sites,
+       ROUND (COUNT (*) / COUNT (DISTINCT site_id), 2) avgSite
+  FROM ncs3.vwmessage;
 
 SELECT mindt,
        maxdt,
@@ -589,43 +589,44 @@ SELECT mindt,
        ROUND ( (avgSite / sites) / 7500, 2) avgDays,
        sites,
        maxdt - mindt dt
-  FROM (SELECT MIN (mindt) mindt,
-               MAX (maxdt) maxdt,
-               SUM (totalcount) tcount,
-               COUNT (DISTINCT siteid) sites,
-               ROUND (SUM (totalcount) / COUNT (DISTINCT siteid), 2) avgSite
-          FROM orcl.MESSAGE_STATS);
+  FROM (SELECT MIN (DT_MIN) mindt,
+               MAX (DT_MAX) maxdt,
+               SUM (total_recs) tcount,
+               COUNT (DISTINCT site_id) sites,
+               ROUND (SUM (total_recs) / COUNT (DISTINCT site_id), 2) avgSite
+          FROM ncs3.vwMESSAGE_STATS);
 
-SELECT * FROM ORCL.MESSAGE_STATS;
+SELECT * FROM NCS3.vwMESSAGE_STATS;
 
-SELECT TO_CHAR (dtg, 'yyyy/MM/dd hh24:mm:ss') FROM messages;
+SELECT TO_CHAR (dtg, 'yyyy/MM/dd hh24:mm:ss') FROM ncs3.vwmessage;
 
 SELECT TO_CHAR (SYSDATE, 'yyyy/MM/dd hh24:mm:ss') FROM DUAL;
 
-SELECT COUNT (*) FROM orcl.messages;
+SELECT COUNT (*) FROM ncs3.vwmessage;
 
   SELECT *
-    FROM orcl.messages
-ORDER BY id;
+    FROM ncs3.vwmessage
+ORDER BY message_id;
 
   SELECT *
-    FROM orcl.messages
+    FROM ncs3.vwmessage
 ORDER BY dtg DESC;
 
   SELECT *
-    FROM orcl.messages
+    FROM ncs3.vwmessage
 ORDER BY msgtext DESC;
 
-  SELECT siteid, COUNT (*)
-    FROM orcl.messages
-GROUP BY siteid;
+  SELECT site_id, COUNT (*)
+    FROM ncs3.vwmessage
+GROUP BY site_id;
 
-  SELECT siteid, COUNT (*)
-    FROM orcl.messages
-GROUP BY siteid
-  HAVING COUNT (*) < ROUND (COUNT (*) / COUNT (DISTINCT siteid), 2);
+  SELECT site_id, COUNT (*)
+    FROM ncs3.vwmessage
+GROUP BY site_id
+  HAVING COUNT (*) < ROUND (COUNT (*) / COUNT (DISTINCT site_id), 2);
+  
 SELECT 'LEN<=25' lenstep, COUNT (*) lencount
-  FROM orcl.messages
+  FROM ncs3.vwmessage
  WHERE LENGTH (msgtext) BETWEEN 1 AND 25
 UNION
 SELECT 'LEN>25<=50' lenstep, COUNT (*) lencount

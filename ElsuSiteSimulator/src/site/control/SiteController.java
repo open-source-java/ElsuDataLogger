@@ -11,7 +11,7 @@ import elsu.network.application.*;
  *
  * @author ss.dhaliwal
  */
-public class SiteController extends AbstractNetworkServices {
+public class SiteController extends AbstractNetworkApplication {
 
     /**
      * main(Strings[] args) method is the applicaton entry point for

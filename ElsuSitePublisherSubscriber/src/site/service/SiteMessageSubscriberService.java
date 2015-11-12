@@ -1,7 +1,11 @@
 package site.service;
 
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.core.IService;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.factory.ServiceFactory;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.common.*;
 import elsu.io.*;
 import java.io.*;
@@ -117,7 +121,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
             this._alarmData = Arrays.asList(
                     getParentService().getParserFieldValues().split(
                             getParentService().getParserFieldDelimiter()));
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -130,7 +134,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
             this._idleTimeout = Integer.parseInt(
                     getChildConfig().getAttributes().get(
                             "service.monitor.idleTimeout").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -157,7 +161,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
             this._recordTerminatorOutbound
                     = getChildConfig().getAttributes().get(
                             "record.terminator.outbound").toString();
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -416,8 +420,8 @@ public class SiteMessageSubscriberService extends AbstractService implements
                                         getEquipmentId());
 
                                 // create connection for the socket
-                                ServiceConnection dsConn
-                                        = new ServiceConnection(client,
+                                Connection dsConn
+                                        = new Connection(client,
                                                 collector);
 
                                 // add the connection to the service list
@@ -425,7 +429,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
 
                                 // indicate that the subscriber is running
                                 isSubscriberRunning(true);
-                            } catch (Exception ex){
+                            } catch (Exception ex) {
                                 // indicate that the subscriber is not runing
                                 isSubscriberRunning(false);
 
@@ -443,10 +447,10 @@ public class SiteMessageSubscriberService extends AbstractService implements
                             // time, any exceptions are ignored
                             try {
                                 Thread.sleep(getIdleTimeout());
-                            } catch (Exception exi){
+                            } catch (Exception exi) {
                             }
                         }
-                    } catch (Exception exi){
+                    } catch (Exception exi) {
                     } finally {
                         // connection was created, reset the indicator
                         isConnectionsCreatorActive(false);
@@ -457,22 +461,6 @@ public class SiteMessageSubscriberService extends AbstractService implements
             // start the thread to create connection for the service.
             tConnections.start();
         }
-    }
-
-    /**
-     * serve(...) method is the optional method of the service which processes
-     * the client connection using the socket in and out streams.
-     * <p>
-     * Not used for this service, Not supported exception is thrown if executed.
-     *
-     * @param iStream
-     * @param oStream
-     * @throws Exception
-     */
-    @Override
-    public void serve(InputStream iStream, OutputStream oStream) throws
-            Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
@@ -499,14 +487,14 @@ public class SiteMessageSubscriberService extends AbstractService implements
      * @throws Exception
      */
     @Override
-    public void serve(AbstractServiceConnection conn) throws Exception {
+    public void serve(AbstractConnection conn) throws Exception {
         // retrieve current connection count to use for reader thread name 
         // uniqueness
         long totalConnections = getTotalConnections();
 
         // local parameter for reader thread access, passes the connection 
         // object
-        final ServiceConnection cConn = (ServiceConnection) conn;
+        final Connection cConn = (Connection) conn;
 
         // local parameter for reader thread access, passes the socket in stream
         final BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -587,7 +575,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
                                 // clear the message object for collection 
                                 // through garbage collection
                                 message = null;
-                            } catch (Exception ex){
+                            } catch (Exception ex) {
                                 // increase total message error count
                                 increaseTotalMessagesErrored();
 
@@ -602,7 +590,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
                         // yield processing to other threads
                         Thread.yield();
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     // log error for tracking
                     logError(getClass().toString() + ", serve(), "
                             + getServiceConfig().getServiceName() + " on port "
@@ -620,11 +608,11 @@ public class SiteMessageSubscriberService extends AbstractService implements
                     // close all socket streams and ignore any exceptions
                     try {
                         out.close();
-                    } catch (Exception exi){
+                    } catch (Exception exi) {
                     }
                     try {
                         in.close();
-                    } catch (Exception exi){
+                    } catch (Exception exi) {
                     }
 
                     // log info for tracking
@@ -711,7 +699,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
                                         increaseTotalMessagesSent();
                                     }
                                 }
-                            } catch (Exception ex){
+                            } catch (Exception ex) {
                                 // log error for tracking
                                 logError(getClass().toString() + ", serve(), "
                                         + getChildConfig().getConnectionPort()
@@ -723,11 +711,11 @@ public class SiteMessageSubscriberService extends AbstractService implements
                                 // ignore the exceptions
                                 try {
                                     fStream.close();
-                                } catch (Exception exi){
+                                } catch (Exception exi) {
                                 }
                                 try {
                                     new File(fObj.toString()).delete();
-                                } catch (Exception exi){
+                                } catch (Exception exi) {
                                 }
                             }
                         } else {
@@ -741,7 +729,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
                     }
                 }
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", serve(), "
                     + getServiceConfig().getServiceName() + ", "
@@ -757,12 +745,16 @@ public class SiteMessageSubscriberService extends AbstractService implements
 
             // close all socket streams and ignore any exceptions
             try {
+                try {
+                    out.flush();
+                } catch (Exception exi) {
+                }
                 out.close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
             try {
                 in.close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
 
             // if service is still running, then try to restart the connection
@@ -790,13 +782,13 @@ public class SiteMessageSubscriberService extends AbstractService implements
         if (getAlarmWriter() != null) {
             try {
                 getAlarmWriter().close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
         }
         if (getMessageWriter() != null) {
             try {
                 getMessageWriter().close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
         }
     }
