@@ -1,7 +1,12 @@
 package site.service;
 
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.core.IService;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.core.ServiceStartupType;
+import elsu.network.factory.ServiceFactory;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.common.*;
 import elsu.io.*;
 import java.io.*;
@@ -13,10 +18,10 @@ import java.util.regex.*;
  * IService interface to allow the core service functions in the ServiceAbstract
  * class to manage extended services.
  * <p>
- SiteMessageService is designed to accept incoming data from CS service,
- CommandForwarderServiceAbstract and forward the data to the Simulator
- ServiceAbstract for the equipment.
- <p>
+ * SiteMessageService is designed to accept incoming data from CS service,
+ * CommandForwarderServiceAbstract and forward the data to the Simulator
+ * ServiceAbstract for the equipment.
+ * <p>
  * BcsMessageServiceAbstract manages five subscriber child services to collect
  * data from the individual BCS equipment: TR, IMA, IMB, RSA, and RSB; and
  * manages four publisher child services to send data to the either Alarm or
@@ -116,7 +121,7 @@ public class SiteMessageService extends AbstractService implements IService {
         try {
             isListener(Boolean.valueOf(getServiceConfig().getAttributes().get(
                     "service.listener").toString()));
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -130,7 +135,7 @@ public class SiteMessageService extends AbstractService implements IService {
         try {
             this._siteId = Integer.parseInt(
                     getServiceConfig().getAttributes().get("service.site.id").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -147,7 +152,7 @@ public class SiteMessageService extends AbstractService implements IService {
             this._parserFieldIndex = Integer.parseInt(
                     getServiceConfig().getAttributes().get(
                             "service.parser.field.index").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -159,7 +164,7 @@ public class SiteMessageService extends AbstractService implements IService {
             this._parserFieldLength = Integer.parseInt(
                     getServiceConfig().getAttributes().get(
                             "service.parser.field.length").toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
                     + getServiceConfig().getConnectionPort()
@@ -308,29 +313,26 @@ public class SiteMessageService extends AbstractService implements IService {
      * are stored to a text file and read by the respective subscriber and sent
      * to the equipment
      *
-     * @param iStream
-     * @param oStream
+     * @param conn
      * @throws Exception
      */
     @Override
-    public void serve(InputStream iStream, OutputStream oStream) throws
-            Exception {
-        // create bufferred reader reference for the input stream. the 
-        // reference is created outside the try...catch (Exception ex)the
-        // finally to perform cleanup correctly
-        BufferedReader in = null;
+    public void serve(AbstractConnection conn) throws Exception {
+        // local parameter for reader thread access, passes the connection 
+        // object
+        final Connection cConn = (Connection) conn;
 
-        // create print writer reference for the output stream. the 
-        // reference is created outside the try...catch (Exception ex)the
-        // finally to perform cleanup correctly
-        PrintWriter out = null;
+        // local parameter for reader thread access, passes the socket in stream
+        final BufferedReader in = new BufferedReader(new InputStreamReader(
+                cConn.getClient().getInputStream()));
+
+        // local parameter for reader thread access, passes the socket out 
+        // stream
+        final PrintWriter out = new PrintWriter(new BufferedWriter(
+                new OutputStreamWriter(cConn.getClient().getOutputStream())));
 
         // this is to prevent socket to stay open after error
         try {
-            in = new BufferedReader(new InputStreamReader(iStream));
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    oStream)));
-
             // store the incomming message to text file and send completion
             // code back to the sending service.  the method continues to 
             // loop until either the service is terminated or the connection
@@ -392,7 +394,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                 if (message.length() > 0) {
                                     messageValid = true;
                                 }
-                            } catch (Exception ex){
+                            } catch (Exception ex) {
                                 // increase the message error queue
                                 increaseTotalMessagesErrored();
 
@@ -416,7 +418,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                             + ex.getMessage()
                                             + getRecordTerminator());
                                     out.flush();
-                                } catch (Exception exi){
+                                } catch (Exception exi) {
                                 }
                             }
 
@@ -443,7 +445,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                     // write the message to file for delivery
                                     FileStack.writeFile(filename, message
                                             + GlobalStack.LINESEPARATOR, true);
-                                } catch (Exception ex){
+                                } catch (Exception ex) {
                                     // increase the message error queue
                                     increaseTotalMessagesErrored();
 
@@ -469,7 +471,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                                 + ex.getMessage()
                                                 + getRecordTerminator());
                                         out.flush();
-                                    } catch (Exception exi){
+                                    } catch (Exception exi) {
                                     }
                                 }
 
@@ -499,10 +501,10 @@ public class SiteMessageService extends AbstractService implements IService {
                                 out.print(getStatusInvalidContent()
                                         + getRecordTerminator());
                                 out.flush();
-                            } catch (Exception exi){
+                            } catch (Exception exi) {
                             }
                         }
-                    } catch (Exception ex){
+                    } catch (Exception ex) {
                         // increase the message error queue
                         increaseTotalMessagesErrored();
 
@@ -524,7 +526,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                     + ", " + ex.getMessage()
                                     + getRecordTerminator());
                             out.flush();
-                        } catch (Exception exi){
+                        } catch (Exception exi) {
                         }
                     }
                 }
@@ -532,7 +534,7 @@ public class SiteMessageService extends AbstractService implements IService {
                 // yield processing to other threads
                 Thread.yield();
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             // log error for tracking
             logError(getClass().toString() + ", serve(), "
                     + getServiceConfig().getServiceName() + ", "
@@ -540,33 +542,18 @@ public class SiteMessageService extends AbstractService implements IService {
         } finally {
             // close out all open in/out streams.
             try {
-                out.flush();
-            } catch (Exception exi){
-            }
-
-            try {
+                try {
+                    out.flush();
+                } catch (Exception exi) {
+                }
                 out.close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
             try {
                 in.close();
-            } catch (Exception exi){
+            } catch (Exception exi) {
             }
         }
-    }
-
-    /**
-     * serve(...) method is the optional method of the service which processes
-     * the client connection which can be not socket based.
-     * <p>
-     * Not used for this service, Not supported exception is thrown if executed.
-     *
-     * @param conn
-     * @throws Exception
-     */
-    @Override
-    public void serve(AbstractServiceConnection conn) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -601,7 +588,7 @@ public class SiteMessageService extends AbstractService implements IService {
                     // add the child service to the service
                     addChildService(subcriberService,
                             subscriber.getConnectionPort());
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     // log error for tracking
                     logError(getClass().toString()
                             + ", start(), child service activation failed ("
@@ -635,7 +622,7 @@ public class SiteMessageService extends AbstractService implements IService {
                     // add the child service to the service
                     addChildService(publisherService,
                             publisher.getConnectionPort());
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     // log error for tracking
                     logError(getClass().toString()
                             + ", start(), child service activation failed ("

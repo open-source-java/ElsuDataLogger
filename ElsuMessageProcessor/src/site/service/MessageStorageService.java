@@ -1,7 +1,11 @@
 package site.service;
 
+import elsu.network.services.core.IService;
+import elsu.network.services.core.ServiceConfig;
+import elsu.network.services.AbstractConnection;
+import elsu.network.services.core.AbstractService;
+import elsu.network.factory.ServiceFactory;
 import elsu.network.services.*;
-import elsu.network.service.factory.*;
 import elsu.database.*;
 import elsu.common.*;
 import java.io.*;
@@ -251,27 +255,29 @@ public class MessageStorageService extends AbstractService implements IService {
      * If the message type alarm is set to true, then alarm messages are treated
      * as active alarms
      *
-     * 20141128 SSD added critical error detection when database is non-responsive
-     * to ensure no data is lost
-     * 
-     * @param iStream
-     * @param oStream
+     * 20141128 SSD added critical error detection when database is
+     * non-responsive to ensure no data is lost
+     *
+     * @param conn
      * @throws Exception
      */
     @Override
-    public void serve(InputStream iStream, OutputStream oStream) throws
-            Exception {
+    public void serve(AbstractConnection conn) throws Exception {
         // critical error tracking; if detected then the function is aborted
         boolean criticalError = false;
 
-        // local parameter for reader thread access, passes the socket in 
-        // stream
-        BufferedReader in = new BufferedReader(new InputStreamReader(iStream));
+        // local parameter for reader thread access, passes the connection 
+        // object
+        final Connection cConn = (Connection) conn;
+
+        // local parameter for reader thread access, passes the socket in stream
+        final BufferedReader in = new BufferedReader(new InputStreamReader(
+                cConn.getClient().getInputStream()));
 
         // local parameter for reader thread access, passes the socket out 
         // stream
-        PrintWriter out = new PrintWriter(new BufferedWriter(
-                new OutputStreamWriter(oStream)));
+        final PrintWriter out = new PrintWriter(new BufferedWriter(
+                new OutputStreamWriter(cConn.getClient().getOutputStream())));
 
         // capture any exceptions to prevent resource leaks
         try {
@@ -319,38 +325,38 @@ public class MessageStorageService extends AbstractService implements IService {
 
                         // store the siteId parameter value
                         params.add(new DatabaseParameter("siteid",
-                                DatabaseDataTypes.dtint, Integer.parseInt(
+                                DatabaseDataType.dtint, Integer.parseInt(
                                         lineData[0])));
                         params.add(new DatabaseParameter("equipid",
-                                DatabaseDataTypes.dtint, Integer.parseInt(
+                                DatabaseDataType.dtint, Integer.parseInt(
                                         lineData[2])));
                         params.add(new DatabaseParameter("dtg",
-                                DatabaseDataTypes.dttimestamp,
+                                DatabaseDataType.dttimestamp,
                                 DateStack.convertDate2SQLTimestamp(tDate,
                                         "yyyy/MM/dd HH:mm:ss.S")));
                         params.add(new DatabaseParameter("msgtext",
-                                DatabaseDataTypes.dtstring, lineData[4]));
+                                DatabaseDataType.dtstring, lineData[4]));
                         params.add(new DatabaseParameter("outbound",
-                                DatabaseDataTypes.dtstring, "N"));
+                                DatabaseDataType.dtstring, "N"));
                         if (getMessageStorageType() == MessageStorageType.ALARM) {
                             params.add(new DatabaseParameter("alarm",
-                                    DatabaseDataTypes.dtstring, "Y"));
+                                    DatabaseDataType.dtstring, "Y"));
                         } else {
                             params.add(new DatabaseParameter("alarm",
-                                    DatabaseDataTypes.dtstring, "N"));
+                                    DatabaseDataType.dtstring, "N"));
                         }
                         if (getMessageStorageMode()
                                 == MessageStorageProcessingType.RECOVERY) {
                             params.add(new DatabaseParameter("recovery",
-                                    DatabaseDataTypes.dtstring, "Y"));
+                                    DatabaseDataType.dtstring, "Y"));
                         } else {
                             params.add(new DatabaseParameter("recovery",
-                                    DatabaseDataTypes.dtstring, "N"));
+                                    DatabaseDataType.dtstring, "N"));
                         }
                         params.add(new DatabaseParameter("id",
-                                DatabaseDataTypes.dtint, true));
+                                DatabaseDataType.dtint, true));
                         params.add(new DatabaseParameter("status",
-                                DatabaseDataTypes.dtstring, true));
+                                DatabaseDataType.dtstring, true));
 
                         // using database manager, execute the procedure with parameters
                         Map<String, Object> result = null;
@@ -443,12 +449,10 @@ public class MessageStorageService extends AbstractService implements IService {
         } finally {
             // flush the outbound stream and ignore any exception
             try {
-                out.flush();
-            } catch (Exception exi) {
-            }
-
-            // close all socket streams and ignore any exceptions
-            try {
+                try {
+                    out.flush();
+                } catch (Exception exi) {
+                }
                 out.close();
             } catch (Exception exi) {
             }
@@ -457,20 +461,6 @@ public class MessageStorageService extends AbstractService implements IService {
             } catch (Exception exi) {
             }
         }
-    }
-
-    /**
-     * serve(...) method is the optional method of the service which processes
-     * the client non socket related connection.
-     * <p>
-     * Not used for this service, Not supported exception is thrown if executed.
-     *
-     * @param conn
-     * @throws Exception
-     */
-    @Override
-    public void serve(AbstractServiceConnection conn) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
