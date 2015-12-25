@@ -562,7 +562,7 @@ public class CommandForwarderService extends AbstractService implements IService
 
             // extract the siteId from the parameters stored from monitor
             int siteId = Integer.parseInt(
-                    cConn.getProperties().get("siteid").toString());
+                    cConn.getProperty("siteid").toString());
 
             // capture any exceptions to prevent resource leaks
             try {
