@@ -1,12 +1,10 @@
 package site.service;
 
-import elsu.network.services.core.IService;
-import elsu.network.services.core.ServiceConfig;
-import elsu.network.services.AbstractConnection;
-import elsu.network.services.core.AbstractService;
-import elsu.network.factory.ServiceFactory;
+import elsu.network.services.core.*;
 import elsu.network.services.*;
+import elsu.network.factory.*;
 import elsu.database.*;
+import elsu.network.application.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -82,10 +80,10 @@ public class CommandForwarderService extends AbstractService implements IService
      * @see ServiceConnectionBasic
      * @see Connection
      */
-    public CommandForwarderService(ServiceFactory factory, String threadGroup,
+    public CommandForwarderService(String threadGroup, ServiceManager serviceManager,
             ServiceConfig serviceConfig) {
         // call the super class constructor
-        super(factory, threadGroup, serviceConfig);
+        super(threadGroup, serviceManager, serviceConfig);
 
         // local config properties for local reference by class method
         initializeLocalProperties();
@@ -97,24 +95,23 @@ public class CommandForwarderService extends AbstractService implements IService
      * variables to be reset from another method within a class if required.
      *
      */
-    private void initializeLocalProperties() {
-        this._serviceShutdown = getFactory().getApplicationProperties().get(
-                "service.shutdown").toString();
+    @Override
+    protected void initializeLocalProperties() {
+        this._serviceShutdown = getProperty("service.shutdown").toString();
         this._connectionTerminator
-                = getFactory().getApplicationProperties().get(
-                        "connection.terminator").toString();
-        this._dbDriver = getServiceConfig().getAttributes().get(
+                = getProperty("connection.terminator").toString();
+        this._dbDriver = getServiceConfig().getAttribute(
                 "service.database.driver").toString();
-        this._dbConnectionString = getServiceConfig().getAttributes().get(
+        this._dbConnectionString = getServiceConfig().getAttribute(
                 "service.database.connectionString").toString();
-        this._dbUser = getServiceConfig().getAttributes().get(
+        this._dbUser = getServiceConfig().getAttribute(
                 "service.database.user").toString();
-        this._dbPassword = getServiceConfig().getAttributes().get(
+        this._dbPassword = getServiceConfig().getAttribute(
                 "service.database.password").toString();
 
         try {
             this._maxPool = Integer.parseInt(
-                    getServiceConfig().getAttributes().get(
+                    getServiceConfig().getAttribute(
                             "service.database.max.pool").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -126,7 +123,7 @@ public class CommandForwarderService extends AbstractService implements IService
 
         try {
             this._clientPort = Integer.parseInt(
-                    getServiceConfig().getAttributes().get("service.client.port").toString());
+                    getServiceConfig().getAttribute("service.client.port").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -138,7 +135,7 @@ public class CommandForwarderService extends AbstractService implements IService
 
         try {
             this._idleTimeout = Integer.parseInt(
-                    getServiceConfig().getAttributes().get(
+                    getServiceConfig().getAttribute(
                             "service.monitor.idleTimeout").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -298,7 +295,7 @@ public class CommandForwarderService extends AbstractService implements IService
             params = new ArrayList<>();
 
             // store the siteId parameter value
-            params.add(new DatabaseParameter("siteid", DatabaseDataType.dtint,
+            params.add(new DatabaseParameter("siteid", java.sql.Types.BIGINT,
                     siteId));
 
             // using database manager, execute the procedure with parameters
@@ -335,9 +332,9 @@ public class CommandForwarderService extends AbstractService implements IService
             params = new ArrayList<>();
 
             // store the siteId parameter value
-            params.add(new DatabaseParameter("siteid", DatabaseDataType.dtint,
+            params.add(new DatabaseParameter("siteid", java.sql.Types.BIGINT,
                     siteId));
-            params.add(new DatabaseParameter("count", DatabaseDataType.dtint,
+            params.add(new DatabaseParameter("count", java.sql.Types.BIGINT,
                     true));
 
             // using database manager, execute the procedure with parameters
@@ -371,10 +368,10 @@ public class CommandForwarderService extends AbstractService implements IService
             params = new ArrayList<>();
 
             // store the siteId parameter value
-            params.add(new DatabaseParameter("siteid", DatabaseDataType.dtint,
+            params.add(new DatabaseParameter("siteid", java.sql.Types.BIGINT,
                     siteId));
-            params.add(new DatabaseParameter("messageid",
-                    DatabaseDataType.dtint, messageId));
+            params.add(new DatabaseParameter("messageid", java.sql.Types.BIGINT, 
+                    messageId));
 
             // using database manager, execute the procedure with parameters
             getDBManager().executeProcedure(
@@ -470,9 +467,9 @@ public class CommandForwarderService extends AbstractService implements IService
 
                     // store the siteId parameter value
                     params.add(new DatabaseParameter("siteid",
-                            DatabaseDataType.dtint, true));
+                            java.sql.Types.BIGINT, true));
                     params.add(new DatabaseParameter("siteip",
-                            DatabaseDataType.dtstring, true));
+                            java.sql.Types.VARCHAR, true));
 
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
@@ -574,13 +571,13 @@ public class CommandForwarderService extends AbstractService implements IService
 
                     // store the siteId parameter value
                     params.add(new DatabaseParameter("siteid",
-                            DatabaseDataType.dtint, siteId));
+                            java.sql.Types.BIGINT, siteId));
                     params.add(new DatabaseParameter("messageid",
-                            DatabaseDataType.dtint, true));
+                            java.sql.Types.BIGINT, true));
                     params.add(new DatabaseParameter("equipmentid",
-                            DatabaseDataType.dtint, true));
+                            java.sql.Types.BIGINT, true));
                     params.add(new DatabaseParameter("message",
-                            DatabaseDataType.dtstring, true));
+                            java.sql.Types.VARCHAR, true));
 
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;

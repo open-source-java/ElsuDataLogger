@@ -1,14 +1,10 @@
 package site.service;
 
-import elsu.network.services.core.ServiceConfig;
-import elsu.network.services.core.IService;
-import elsu.network.services.AbstractConnection;
-import elsu.network.services.core.AbstractService;
-import elsu.network.core.ServiceStartupType;
-import elsu.network.factory.ServiceFactory;
+import elsu.network.services.core.*;
 import elsu.network.services.*;
+import elsu.network.core.*;
 import elsu.common.*;
-import elsu.io.*;
+import elsu.network.application.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -92,10 +88,10 @@ public class SiteMessageService extends AbstractService implements IService {
      * @param serviceConfig
      * @see ServiceAbstract
      */
-    public SiteMessageService(ServiceFactory factory, String threadGroup,
+    public SiteMessageService(String threadGroup, ServiceManager serviceManager,
             ServiceConfig serviceConfig) {
         // call the super class constructor
-        super(factory, threadGroup, serviceConfig);
+        super(threadGroup, serviceManager, serviceConfig);
 
         // local config properties for local reference by class method
         initializeLocalProperties();
@@ -107,19 +103,18 @@ public class SiteMessageService extends AbstractService implements IService {
      * variables to be reset from another method within a class if required.
      *
      */
-    private void initializeLocalProperties() {
-        this._serviceShutdown = getFactory().getApplicationProperties().get(
-                "service.shutdown").toString();
+    @Override
+    protected void initializeLocalProperties() {
+        this._serviceShutdown = getProperty("service.shutdown").toString();
         this._connectionTerminator
-                = getFactory().getApplicationProperties().get(
-                        "connection.terminator").toString();
-        this._localStoreDirectory = getServiceConfig().getAttributes().get(
+                = getProperty("connection.terminator").toString();
+        this._localStoreDirectory = getServiceConfig().getAttribute(
                 "service.localStore.directory").toString();
-        this._localStoreMask = getServiceConfig().getAttributes().get(
+        this._localStoreMask = getServiceConfig().getAttribute(
                 "service.localStore.mask").toString();
 
         try {
-            isListener(Boolean.valueOf(getServiceConfig().getAttributes().get(
+            isListener(Boolean.valueOf(getServiceConfig().getAttribute(
                     "service.listener").toString()));
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -129,12 +124,12 @@ public class SiteMessageService extends AbstractService implements IService {
             isListener(false);
         }
 
-        this._siteName = getServiceConfig().getAttributes().get(
+        this._siteName = getServiceConfig().getAttribute(
                 "service.site.name").toString();
 
         try {
             this._siteId = Integer.parseInt(
-                    getServiceConfig().getAttributes().get("service.site.id").toString());
+                    getServiceConfig().getAttribute("service.site.id").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -143,14 +138,14 @@ public class SiteMessageService extends AbstractService implements IService {
             this._siteId = 0;
         }
 
-        this._parserFieldName = getServiceConfig().getAttributes().get(
+        this._parserFieldName = getServiceConfig().getAttribute(
                 "service.parser.field.name").toString();
-        this._parserFieldDelimiter = getServiceConfig().getAttributes().get(
+        this._parserFieldDelimiter = getServiceConfig().getAttribute(
                 "service.parser.field.delimiter").toString();
 
         try {
             this._parserFieldIndex = Integer.parseInt(
-                    getServiceConfig().getAttributes().get(
+                    getServiceConfig().getAttribute(
                             "service.parser.field.index").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -162,7 +157,7 @@ public class SiteMessageService extends AbstractService implements IService {
 
         try {
             this._parserFieldLength = Integer.parseInt(
-                    getServiceConfig().getAttributes().get(
+                    getServiceConfig().getAttribute(
                             "service.parser.field.length").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -173,7 +168,7 @@ public class SiteMessageService extends AbstractService implements IService {
             this._parserFieldLength = 0;
         }
 
-        this._parserFieldValues = getServiceConfig().getAttributes().get(
+        this._parserFieldValues = getServiceConfig().getAttribute(
                 "service.parser.field.values").toString();
     }
     // </editor-fold>
@@ -576,9 +571,9 @@ public class SiteMessageService extends AbstractService implements IService {
                 try {
                     // create the child service object
                     SiteMessageSubscriberService subcriberService
-                            = new SiteMessageSubscriberService(getFactory(),
-                                    getServiceConfig().getServiceClass(), this,
-                                    subscriber);
+                            = new SiteMessageSubscriberService(
+                                    getServiceConfig().getServiceClass(), 
+                                    getServiceManager(), this, subscriber);
 
                     // log info for tracking
                     logInfo(getClass().toString()
@@ -610,9 +605,9 @@ public class SiteMessageService extends AbstractService implements IService {
                 try {
                     // create the child service object
                     SiteMessagePublisherService publisherService
-                            = new SiteMessagePublisherService(getFactory(),
-                                    getServiceConfig().getServiceClass(), this,
-                                    publisher);
+                            = new SiteMessagePublisherService(
+                                    getServiceConfig().getServiceClass(), 
+                                    getServiceManager(), this, publisher);
 
                     // log info for tracking
                     logInfo(getClass().toString()

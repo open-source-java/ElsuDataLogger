@@ -1,17 +1,13 @@
 package site.service;
 
-import elsu.network.services.core.ServiceConfig;
-import elsu.network.services.core.IService;
-import elsu.network.services.AbstractConnection;
-import elsu.network.services.core.AbstractService;
-import elsu.network.factory.ServiceFactory;
+import elsu.network.services.core.*;
 import elsu.network.services.*;
 import elsu.common.*;
 import elsu.io.*;
+import elsu.network.application.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import site.core.*;
 
 /**
  * BcsMessageSubscriberServiceAbstract class is implemented as a child service
@@ -85,11 +81,11 @@ public class SiteMessageSubscriberService extends AbstractService implements
      * @param parentService
      * @param childConfig
      */
-    public SiteMessageSubscriberService(ServiceFactory factory,
-            String threadGroup, IService parentService,
+    public SiteMessageSubscriberService(String threadGroup,
+            ServiceManager serviceManager, IService parentService, 
             ServiceConfig childConfig) {
         // call the super class constructor
-        super(factory, threadGroup,
+        super(threadGroup, serviceManager, 
                 ((SiteMessageService) parentService).getServiceConfig());
 
         // set the parent service property, used to reference local storage and
@@ -110,12 +106,11 @@ public class SiteMessageSubscriberService extends AbstractService implements
      * variables to be reset from another method within a class if required.
      *
      */
-    private void initializeLocalProperties() {
-        this._serviceShutdown = getFactory().getApplicationProperties().get(
-                "service.shutdown").toString();
+    @Override
+    protected void initializeLocalProperties() {
+        this._serviceShutdown = getProperty("service.shutdown").toString();
         this._connectionTerminator
-                = getFactory().getApplicationProperties().get(
-                        "connection.terminator").toString();
+                = getProperty("connection.terminator").toString();
 
         try {
             this._alarmData = Arrays.asList(
@@ -132,7 +127,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
 
         try {
             this._idleTimeout = Integer.parseInt(
-                    getChildConfig().getAttributes().get(
+                    getChildConfig().getAttribute(
                             "service.monitor.idleTimeout").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -145,10 +140,9 @@ public class SiteMessageSubscriberService extends AbstractService implements
 
         this._equipmentId = getChildConfig().getConnectionPort();
         this._hostUri
-                = getChildConfig().getAttributes().get("service.hostUri").toString();
+                = getChildConfig().getAttribute("service.hostUri").toString();
 
-        switch (getFactory().getApplicationProperties().get(
-                "data.recovery.periodicity").toString()) {
+        switch (getProperty("data.recovery.periodicity").toString()) {
             case "DAY":
                 this._recoveryPeriodicity = FileRolloverPeriodicityType.DAY;
                 break;
@@ -159,7 +153,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
 
         try {
             this._recordTerminatorOutbound
-                    = getChildConfig().getAttributes().get(
+                    = getChildConfig().getAttribute(
                             "record.terminator.outbound").toString();
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "

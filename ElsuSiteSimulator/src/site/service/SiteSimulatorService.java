@@ -1,14 +1,11 @@
 package site.service;
 
-import elsu.network.services.core.IService;
-import elsu.network.services.core.ServiceConfig;
-import elsu.network.services.core.AbstractService;
-import elsu.network.services.AbstractConnection;
-import elsu.network.factory.ServiceFactory;
+import elsu.network.services.core.*;
 import elsu.network.services.*;
 import java.io.*;
 import java.util.*;
-import elsu.common.FileStack;
+import elsu.common.*;
+import elsu.network.application.*;
 
 /**
  *
@@ -48,10 +45,10 @@ public class SiteSimulatorService extends AbstractService implements IService {
     // </editor-fold>
 
     // <editor-fold desc="class constructor destructor">
-    public SiteSimulatorService(ServiceFactory factory, String threadGroup,
+    public SiteSimulatorService(String threadGroup, ServiceManager serviceManager,
             ServiceConfig serviceConfig) {
         // call the super class constructor
-        super(factory, threadGroup, serviceConfig);
+        super(threadGroup, serviceManager, serviceConfig);
 
         _simData = new ArrayList<>();
 
@@ -64,21 +61,19 @@ public class SiteSimulatorService extends AbstractService implements IService {
      * variables to be reset from another method within a class if required.
      *
      */
-    private void initializeLocalProperties() {
-        this._serviceShutdown = getFactory().getApplicationProperties().get(
-                "service.shutdown").toString();
-        this._connectionTerminator
-                = getFactory().getApplicationProperties().get(
-                        "connection.terminator").toString();
+    @Override
+    protected void initializeLocalProperties() {
+        this._serviceShutdown = getProperty("service.shutdown").toString();
+        this._connectionTerminator = getProperty("connection.terminator").toString();
 
-        this._localStoreDirectory = getServiceConfig().getAttributes().get(
+        this._localStoreDirectory = getServiceConfig().getAttribute(
                 "service.localStore.directory").toString();
-        this._localStoreFilename = getServiceConfig().getAttributes().get(
+        this._localStoreFilename = getServiceConfig().getAttribute(
                 "service.localStore.filename").toString();
 
         try {
             this._sendDelay = Integer.parseInt(
-                    getServiceConfig().getAttributes().get(
+                    getServiceConfig().getAttribute(
                             "service.connection.send.delay").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -89,12 +84,12 @@ public class SiteSimulatorService extends AbstractService implements IService {
             this._sendDelay = 10000;
         }
 
-        isSendLoop(Boolean.valueOf(getServiceConfig().getAttributes().get(
+        isSendLoop(Boolean.valueOf(getServiceConfig().getAttribute(
                 "service.connection.send.loop").toString()));
 
         try {
             this._sendCount = Integer.parseInt(
-                    getServiceConfig().getAttributes().get(
+                    getServiceConfig().getAttribute(
                             "service.connection.send.count").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "

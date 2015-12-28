@@ -1,13 +1,11 @@
 package site.service;
 
-import elsu.network.services.core.IService;
-import elsu.network.services.core.ServiceConfig;
-import elsu.network.services.AbstractConnection;
-import elsu.network.services.core.AbstractService;
-import elsu.network.factory.ServiceFactory;
+import elsu.network.services.core.*;
 import elsu.network.services.*;
+import elsu.network.factory.*;
 import elsu.database.*;
 import elsu.common.*;
+import elsu.network.application.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -80,10 +78,10 @@ public class MessageStorageService extends AbstractService implements IService {
      * @see ServiceConnectionBasic
      * @see ServiceConnectionCustom
      */
-    public MessageStorageService(ServiceFactory factory, String threadGroup,
+    public MessageStorageService(String threadGroup, ServiceManager serviceManager,
             ServiceConfig serviceConfig) {
         // call the super class constructor
-        super(factory, threadGroup, serviceConfig);
+        super(threadGroup, serviceManager, serviceConfig);
 
         // local config properties for local reference by class method
         initializeLocalProperties();
@@ -95,12 +93,11 @@ public class MessageStorageService extends AbstractService implements IService {
      * variables to be reset from another method within a class if required.
      *
      */
-    private void initializeLocalProperties() {
-        this._serviceShutdown = getFactory().getApplicationProperties().get(
-                "service.shutdown").toString();
+    @Override
+    protected void initializeLocalProperties() {
+        this._serviceShutdown = getProperty("service.shutdown").toString();
         this._connectionTerminator
-                = getFactory().getApplicationProperties().get(
-                        "connection.terminator").toString();
+                = getProperty("connection.terminator").toString();
         this._dbDriver = getServiceConfig().getAttributes().get(
                 "service.database.driver").toString();
         this._dbConnectionString = getServiceConfig().getAttributes().get(
@@ -325,38 +322,38 @@ public class MessageStorageService extends AbstractService implements IService {
 
                         // store the siteId parameter value
                         params.add(new DatabaseParameter("siteid",
-                                DatabaseDataType.dtint, Integer.parseInt(
+                                java.sql.Types.BIGINT, Integer.parseInt(
                                         lineData[0])));
                         params.add(new DatabaseParameter("equipid",
-                                DatabaseDataType.dtint, Integer.parseInt(
+                                java.sql.Types.BIGINT, Integer.parseInt(
                                         lineData[2])));
                         params.add(new DatabaseParameter("dtg",
-                                DatabaseDataType.dttimestamp,
+                                java.sql.Types.TIMESTAMP,
                                 DateStack.convertDate2SQLTimestamp(tDate,
                                         "yyyy/MM/dd HH:mm:ss.S")));
                         params.add(new DatabaseParameter("msgtext",
-                                DatabaseDataType.dtstring, lineData[4]));
+                                java.sql.Types.VARCHAR, lineData[4]));
                         params.add(new DatabaseParameter("outbound",
-                                DatabaseDataType.dtstring, "N"));
+                                java.sql.Types.VARCHAR, "N"));
                         if (getMessageStorageType() == MessageStorageType.ALARM) {
                             params.add(new DatabaseParameter("alarm",
-                                    DatabaseDataType.dtstring, "Y"));
+                                    java.sql.Types.VARCHAR, "Y"));
                         } else {
                             params.add(new DatabaseParameter("alarm",
-                                    DatabaseDataType.dtstring, "N"));
+                                    java.sql.Types.VARCHAR, "N"));
                         }
                         if (getMessageStorageMode()
                                 == MessageStorageProcessingType.RECOVERY) {
                             params.add(new DatabaseParameter("recovery",
-                                    DatabaseDataType.dtstring, "Y"));
+                                    java.sql.Types.VARCHAR, "Y"));
                         } else {
                             params.add(new DatabaseParameter("recovery",
-                                    DatabaseDataType.dtstring, "N"));
+                                    java.sql.Types.VARCHAR, "N"));
                         }
                         params.add(new DatabaseParameter("id",
-                                DatabaseDataType.dtint, true));
+                                java.sql.Types.BIGINT, true));
                         params.add(new DatabaseParameter("status",
-                                DatabaseDataType.dtstring, true));
+                                java.sql.Types.VARCHAR, true));
 
                         // using database manager, execute the procedure with parameters
                         Map<String, Object> result = null;

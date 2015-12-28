@@ -1,13 +1,10 @@
 package site.service;
 
-import elsu.network.services.core.ServiceConfig;
-import elsu.network.services.core.IService;
-import elsu.network.services.AbstractConnection;
-import elsu.network.services.core.AbstractService;
-import elsu.network.factory.ServiceFactory;
-import elsu.common.FileStack;
+import elsu.network.services.core.*;
 import elsu.network.services.*;
+import elsu.common.*;
 import elsu.io.*;
+import elsu.network.application.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -84,10 +81,11 @@ public class SiteMessagePublisherService extends AbstractService implements
     // </editor-fold>
 
     // <editor-fold desc="class constructor destructor">
-    public SiteMessagePublisherService(ServiceFactory factory, String threadGroup,
-            IService parentService, ServiceConfig childConfig) {
+    public SiteMessagePublisherService(String threadGroup,
+            ServiceManager serviceManager, IService parentService, 
+            ServiceConfig childConfig) {
         // call the super class constructor
-        super(factory, threadGroup,
+        super(threadGroup, serviceManager, 
                 ((SiteMessageService) parentService).getServiceConfig());
 
         // set the parent service property, used to reference local storage and
@@ -108,21 +106,20 @@ public class SiteMessagePublisherService extends AbstractService implements
      * variables to be reset from another method within a class if required.
      *
      */
-    private void initializeLocalProperties() {
-        this._serviceShutdown = getFactory().getApplicationProperties().get(
-                "service.shutdown").toString();
+    @Override
+    protected void initializeLocalProperties() {
+        this._serviceShutdown = getProperty("service.shutdown").toString();
         this._connectionTerminator
-                = getFactory().getApplicationProperties().get(
-                        "connection.terminator").toString();
+                = getProperty("connection.terminator").toString();
 
-        if (getChildConfig().getAttributes().get("service.publisher.type").toString().equals(
+        if (getChildConfig().getAttribute("service.publisher.type").toString().equals(
                 "ALARM")) {
             this._publisherType = PublisherType.ALARM;
         } else {
             this._publisherType = PublisherType.MESSAGE;
         }
 
-        if (getChildConfig().getAttributes().get("service.processing.mode").toString().equals(
+        if (getChildConfig().getAttribute("service.processing.mode").toString().equals(
                 "LIVE")) {
             this._publisherProcessingType = PublisherProcessingType.LIVE;
         } else {
@@ -131,7 +128,7 @@ public class SiteMessagePublisherService extends AbstractService implements
 
         try {
             this._hostCount = Integer.parseInt(
-                    getChildConfig().getAttributes().get(
+                    getChildConfig().getAttribute(
                             "service.connection.hostUri.count").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -145,7 +142,7 @@ public class SiteMessagePublisherService extends AbstractService implements
         String hostUri;
 
         for (int i = 1; i <= getHostCount(); i++) {
-            hostUri = getChildConfig().getAttributes().get(
+            hostUri = getChildConfig().getAttribute(
                     "service.connection.hostUri." + i).toString();
             if (!hostUri.isEmpty()) {
                 getHostUriList().add(hostUri);
@@ -156,7 +153,7 @@ public class SiteMessagePublisherService extends AbstractService implements
 
         try {
             this._idleTimeout = Integer.parseInt(
-                    getChildConfig().getAttributes().get(
+                    getChildConfig().getAttribute(
                             "service.monitor.idleTimeout").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
@@ -167,8 +164,7 @@ public class SiteMessagePublisherService extends AbstractService implements
             this._idleTimeout = 5000;
         }
 
-        switch (getFactory().getApplicationProperties().get(
-                "data.recovery.periodicity").toString()) {
+        switch (getProperty("data.recovery.periodicity").toString()) {
             case "DAY":
                 this._recoveryPeriodicity = FileRolloverPeriodicityType.DAY;
                 break;
@@ -179,8 +175,7 @@ public class SiteMessagePublisherService extends AbstractService implements
 
         try {
             this._recoveryThreshold = Integer.parseInt(
-                    getFactory().getApplicationProperties().get(
-                            "data.recovery.rolloverThreshold").toString());
+                    getProperty("data.recovery.rolloverThreshold").toString());
         } catch (Exception ex) {
             logError(getClass().toString() + ", initializeLocalProperties(), "
                     + getServiceConfig().getServiceName() + " on port "
