@@ -429,7 +429,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                         + "incomming\\"
                                         + String.format(getLocalStoreMask(),
                                                 siteId,
-                                                DateStack.convertDate2String(
+                                                DateUtils.convertDate2String(
                                                         Calendar.getInstance().getTime(),
                                                         getDatetimeFormat()),
                                                 equipmentId + "_CS");
@@ -438,7 +438,7 @@ public class SiteMessageService extends AbstractService implements IService {
                                 // to notify the client and exit.
                                 try {
                                     // write the message to file for delivery
-                                    FileStack.writeFile(filename, message
+                                    FileUtils.writeFile(filename, message
                                             + GlobalStack.LINESEPARATOR, true);
                                 } catch (Exception ex) {
                                     // increase the message error queue

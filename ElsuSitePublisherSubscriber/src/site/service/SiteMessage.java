@@ -134,7 +134,7 @@ public class SiteMessage extends SiteMessageAbstract {
      * @param format
      */
     public void setMessageDate(String date, String format) {
-        this._messageDate = DateStack.convertString2Date(date, format);
+        this._messageDate = DateUtils.convertString2Date(date, format);
     }
 
     /**
@@ -299,7 +299,7 @@ public class SiteMessage extends SiteMessageAbstract {
 
         result.append(getSiteId())
                 .append(delimiter);
-        result.append(DateStack.convertDate2String(getMessageDate(),
+        result.append(DateUtils.convertDate2String(getMessageDate(),
                 datetimeFormat))
                 .append(delimiter);
         result.append(getEquipmentId())
@@ -375,7 +375,7 @@ public class SiteMessage extends SiteMessageAbstract {
         result.append("<object attr='").append(getClass().getName()).append("'>");
         result.append("<siteId>").append(getSiteId()).append("</sideId>");
         result.append("<messageDate>")
-                .append(DateStack.convertDate2String(getMessageDate(), getDatetimeFormat()))
+                .append(DateUtils.convertDate2String(getMessageDate(), getDatetimeFormat()))
                 .append("</messageDate>");
         result.append("<equipmentId>")
                 .append(getEquipmentId()).append("</equipmentId>");

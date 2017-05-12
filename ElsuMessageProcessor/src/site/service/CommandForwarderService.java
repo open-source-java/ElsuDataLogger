@@ -4,6 +4,7 @@ import elsu.network.services.core.*;
 import elsu.network.services.*;
 import elsu.network.factory.*;
 import elsu.database.*;
+import elsu.database.DatabaseUtils.*;
 import elsu.network.application.*;
 import java.io.*;
 import java.net.*;
@@ -289,6 +290,8 @@ public class CommandForwarderService extends AbstractService implements IService
      */
     private void clearPendingNotifier(int siteId) {
         // capture any exceptions to prevent resource leaks
+        java.sql.Connection dbConn = null;
+
         try {
             // allocate list to manage params
             ArrayList<DatabaseParameter> params;
@@ -299,9 +302,14 @@ public class CommandForwarderService extends AbstractService implements IService
                     siteId));
 
             // using database manager, execute the procedure with parameters
-            getDBManager().executeProcedure("{call pClearPendingNotifier(?)}",
+            dbConn = getDBManager().getConnection();
+            DatabaseUtils.executeProcedure(dbConn,
+                    "{call pClearPendingNotifier(?)}",
                     params);
+            getDBManager().releaseConnection(dbConn);
         } catch (Exception ex) {
+            getDBManager().releaseConnection(dbConn);
+
             // log error for tracking
             logError(getClass().toString() + ", clearPendingNotifier(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -324,6 +332,7 @@ public class CommandForwarderService extends AbstractService implements IService
     private int getPendingNotifierCount(int siteId) {
         // storage for return value
         Map<String, Object> result = null;
+        java.sql.Connection dbConn = null;
 
         // capture any exceptions to prevent resource leaks
         try {
@@ -338,9 +347,13 @@ public class CommandForwarderService extends AbstractService implements IService
                     true));
 
             // using database manager, execute the procedure with parameters
-            result = getDBManager().executeProcedure(
-                    "{call pGetPendingNotifierCnt(?,?)}", params);
+            dbConn = getDBManager().getConnection();
+            result = DatabaseUtils.executeProcedure(
+                    dbConn, "{call pGetPendingNotifierCnt(?,?)}", params);
+            getDBManager().releaseConnection(dbConn);
         } catch (Exception ex) {
+            getDBManager().releaseConnection(dbConn);
+
             // log error for tracking
             logError(getClass().toString() + ", getPendingNotifierCount(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -362,6 +375,8 @@ public class CommandForwarderService extends AbstractService implements IService
      */
     private void updatePendingNotifier(int siteId, int messageId) {
         // capture any exceptions to prevent resource leaks
+        java.sql.Connection dbConn = null;
+
         try {
             // allocate list to manage params
             ArrayList<DatabaseParameter> params;
@@ -370,13 +385,17 @@ public class CommandForwarderService extends AbstractService implements IService
             // store the siteId parameter value
             params.add(new DatabaseParameter("siteid", java.sql.Types.BIGINT,
                     siteId));
-            params.add(new DatabaseParameter("messageid", java.sql.Types.BIGINT, 
+            params.add(new DatabaseParameter("messageid", java.sql.Types.BIGINT,
                     messageId));
 
             // using database manager, execute the procedure with parameters
-            getDBManager().executeProcedure(
-                    "{call pUpdatePendingNotifier(?, ?)}", params);
+            dbConn = getDBManager().getConnection();
+            DatabaseUtils.executeProcedure(
+                    dbConn, "{call pUpdatePendingNotifier(?, ?)}", params);
+            getDBManager().releaseConnection(dbConn);
         } catch (Exception ex) {
+            getDBManager().releaseConnection(dbConn);
+
             // log error for tracking
             logError(getClass().toString() + ", updatePendingNotifier(), "
                     + getServiceConfig().getServiceName() + " on port "
@@ -443,6 +462,7 @@ public class CommandForwarderService extends AbstractService implements IService
     public void serve(AbstractConnection conn) throws Exception {
         // unbox the connection to custom service connection
         Connection cConn = (Connection) conn;
+        java.sql.Connection dbConn = null;
 
         // this is a non socket connection, monitor action will be performed
         if (cConn.getClient() == null) {
@@ -473,8 +493,10 @@ public class CommandForwarderService extends AbstractService implements IService
 
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
-                    result = getDBManager().executeProcedure(
-                            "{call pGetPendingNotifier(?,?)}", params);
+                    dbConn = getDBManager().getConnection();
+                    result = DatabaseUtils.executeProcedure(
+                            dbConn, "{call pGetPendingNotifier(?,?)}", params);
+                    getDBManager().releaseConnection(dbConn);
 
                     // if there is data available, result contains key/value pairs
                     if ((result != null) && (!result.isEmpty())) {
@@ -500,8 +522,8 @@ public class CommandForwarderService extends AbstractService implements IService
 
                                 // store the connection properties that will be
                                 // used for retrieving and connection properties
-                                dsConn.getProperties().put("siteid", siteId);
-                                dsConn.getProperties().put("siteip", siteIp);
+                                dsConn.addProperty("siteid", siteId);
+                                dsConn.addProperty("siteip", siteIp);
 
                                 // add the connection to the service list
                                 addConnection(client, dsConn);
@@ -529,6 +551,8 @@ public class CommandForwarderService extends AbstractService implements IService
                     Thread.yield();
                 }
             } catch (Exception ex) {
+                getDBManager().releaseConnection(dbConn);
+
                 // log error for tracking
                 logError(getClass().toString() + ", serve(), "
                         + getServiceConfig().getServiceName() + ", "
@@ -581,9 +605,11 @@ public class CommandForwarderService extends AbstractService implements IService
 
                     // using database manager, execute the procedure with parameters
                     Map<String, Object> result = null;
-                    result = getDBManager().executeProcedure(
-                            "{call pRetrievePendingNotifier(?,?,?,?)}",
+                    dbConn = getDBManager().getConnection();
+                    result = DatabaseUtils.executeProcedure(
+                            dbConn, "{call pRetrievePendingNotifier(?,?,?,?)}",
                             params);
+                    getDBManager().releaseConnection(dbConn);
 
                     // if the result from the stored procedure is valid
                     if ((result != null) && (!result.isEmpty())) {
@@ -639,6 +665,8 @@ public class CommandForwarderService extends AbstractService implements IService
                     Thread.yield();
                 }
             } catch (Exception ex) {
+                getDBManager().releaseConnection(dbConn);
+
                 // clear the pending messages due to error, old messages are 
                 // set to ignore
                 clearPendingNotifier(siteId);

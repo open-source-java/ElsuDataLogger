@@ -223,7 +223,7 @@ public class SiteSimulatorService extends AbstractService implements IService {
      */
     private synchronized void setSimData() {
         try {
-            getSimData().addAll(FileStack.readFile(getSimFile()));
+            getSimData().addAll(FileUtils.readFileToList(getSimFile()));
         } catch (Exception ex) {
             logError(getClass().toString() + ", setSimData(), "
                     + getServiceConfig().getServiceName() + " on port "

@@ -4,6 +4,7 @@ import elsu.network.services.core.*;
 import elsu.network.services.*;
 import elsu.network.factory.*;
 import elsu.database.*;
+import elsu.database.DatabaseUtils.*;
 import elsu.common.*;
 import elsu.network.application.*;
 import java.io.*;
@@ -275,6 +276,7 @@ public class MessageStorageService extends AbstractService implements IService {
         // stream
         final PrintWriter out = new PrintWriter(new BufferedWriter(
                 new OutputStreamWriter(cConn.getClient().getOutputStream())));
+        java.sql.Connection dbConn = null;
 
         // capture any exceptions to prevent resource leaks
         try {
@@ -329,7 +331,7 @@ public class MessageStorageService extends AbstractService implements IService {
                                         lineData[2])));
                         params.add(new DatabaseParameter("dtg",
                                 java.sql.Types.TIMESTAMP,
-                                DateStack.convertDate2SQLTimestamp(tDate,
+                                DateUtils.convertDate2SQLTimestamp(tDate,
                                         "yyyy/MM/dd HH:mm:ss.S")));
                         params.add(new DatabaseParameter("msgtext",
                                 java.sql.Types.VARCHAR, lineData[4]));
@@ -357,11 +359,17 @@ public class MessageStorageService extends AbstractService implements IService {
 
                         // using database manager, execute the procedure with parameters
                         Map<String, Object> result = null;
+
                         try {
-                            result = getDBManager().executeProcedure(
+                            dbConn = getDBManager().getConnection();
+                            result = DatabaseUtils.executeProcedure(
+                                    dbConn,
                                     "{call ncs3.pMessageStore(?,?,?,?,?,?,?,?,?)}",
                                     params);
+                            getDBManager().releaseConnection(dbConn);
                         } catch (Exception ex) {
+                            getDBManager().releaseConnection(dbConn);
+
                             // this is critical, if cannot save, then notify error to
                             // client so it can implement some recovery
                             criticalError = true;

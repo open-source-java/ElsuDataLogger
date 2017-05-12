@@ -311,7 +311,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
      * @return <code>ArrayList</code> of files found.
      */
     private ArrayList getPendingFileList() {
-        return FileStack.findFiles(getParentService().getLocalStoreDirectory()
+        return FileUtils.findFiles(getParentService().getLocalStoreDirectory()
                 + "incomming\\",
                 String.format(getFileMask(), ".*", getEquipmentId() + "_CS"),
                 false, 10);
@@ -808,7 +808,7 @@ public class SiteMessageSubscriberService extends AbstractService implements
         // 20150314 ssd added mkdirs to prevent errors in processing
         new File(getParentService().getLocalStoreDirectory()
                 + "incomming").mkdirs();
-        FileStack.deleteFiles(getParentService().getLocalStoreDirectory()
+        FileUtils.deleteFiles(getParentService().getLocalStoreDirectory()
                 + "incomming\\",
                 String.format(getFileMask(), ".*", getEquipmentId() + "_CS"),
                 false);

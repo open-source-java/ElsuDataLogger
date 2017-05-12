@@ -636,7 +636,7 @@ public class SiteMessagePublisherService extends AbstractService implements
                                                 .replace("RCV_MSG", "_MSG")
                                                 .replace("_MSG", "RCV_MSG").replace("_ALM", "RCV_MSG");
 
-                                        FileStack.writeFile(recoveryFile, line, false);
+                                        FileUtils.writeFile(recoveryFile, line, false);
                                     } catch (Exception ex) {
                                         logError(getClass().toString() + ", serve(), "
                                                 + getServiceConfig().getServiceName() + " on port "
